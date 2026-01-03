@@ -1,5 +1,6 @@
 package com.finflow.finflowbackend.Entities;
 
+import com.finflow.finflowbackend.Enums.AuthMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
