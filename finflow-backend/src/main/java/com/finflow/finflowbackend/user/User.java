@@ -1,4 +1,4 @@
-package com.finflow.finflowbackend.Entities;
+package com.finflow.finflowbackend.user;
 
 import com.finflow.finflowbackend.Enums.AuthMethod;
 import com.finflow.finflowbackend.Enums.UserStatus;
