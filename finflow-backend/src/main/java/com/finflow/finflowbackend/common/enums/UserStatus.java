@@ -1,4 +1,4 @@
-package com.finflow.finflowbackend.Enums;
+package com.finflow.finflowbackend.common.enums;
 
 public enum UserStatus {
     ACTIVE,
