@@ -61,13 +61,41 @@ public class Account {
         this.active = false;
     }
 
-    public void updateAccountMoney(Money newMoney) {
+    public void credit(Money moneyIn) {
+        this.validateMoney(moneyIn);
+
+        if (moneyIn.getAmount().signum() < 0) {
+            throw new IllegalArgumentException("Money amount must be greater than zero");
+        }
+        this.accountMoney = this.accountMoney.add(moneyIn);
+    }
+
+    public void debit(Money moneyOut) {
+        this.validateMoney(moneyOut);
+
+        if (moneyOut.getAmount().signum() < 0) {
+            throw new IllegalArgumentException("Money amount must be greater than zero");
+        }
+
+        Money newAccountBalance = this.accountMoney.subtract(moneyOut);
+
+        if (newAccountBalance.getAmount().signum() < 0) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+        this.accountMoney = newAccountBalance;
+    }
+
+    private void validateMoney(Money newMoney) {
         if (newMoney == null) {
             throw new IllegalArgumentException("Money cannot be null");
         }
         if (!newMoney.getCurrency().equals(this.accountMoney.getCurrency())) {
             throw new IllegalArgumentException("Money currency mismatch");
         }
-        this.accountMoney = newMoney;
+    }
+
+    //apply the new account balance logic
+    public void apply() {
+
     }
 }
