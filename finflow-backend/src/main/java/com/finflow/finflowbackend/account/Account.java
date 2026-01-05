@@ -1,6 +1,7 @@
 package com.finflow.finflowbackend.account;
 
 import com.finflow.finflowbackend.common.enums.AccountType;
+import com.finflow.finflowbackend.common.persistence.BaseEntity;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.valueobjects.Money;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Account {
+public class Account extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
