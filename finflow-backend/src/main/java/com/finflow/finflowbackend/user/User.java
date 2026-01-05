@@ -3,6 +3,7 @@ package com.finflow.finflowbackend.user;
 import com.finflow.finflowbackend.account.Account;
 import com.finflow.finflowbackend.common.enums.AuthMethod;
 import com.finflow.finflowbackend.common.enums.UserStatus;
+import com.finflow.finflowbackend.common.persistence.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
