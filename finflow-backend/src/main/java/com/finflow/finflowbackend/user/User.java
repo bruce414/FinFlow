@@ -2,6 +2,7 @@ package com.finflow.finflowbackend.user;
 
 import com.finflow.finflowbackend.common.enums.AuthMethod;
 import com.finflow.finflowbackend.common.enums.UserStatus;
+import com.finflow.finflowbackend.currency.Currency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -56,10 +57,6 @@ public class User {
 
     @Column(nullable = false)
     private String timeZone;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private CurrencySupported defaultCurrency;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
