@@ -1,5 +1,6 @@
 package com.finflow.finflowbackend.account;
 
+import com.finflow.finflowbackend.common.enums.AccountType;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.valueobjects.Money;
 import jakarta.persistence.*;
