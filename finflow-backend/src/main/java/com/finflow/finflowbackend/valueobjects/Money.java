@@ -18,7 +18,7 @@ public class Money {
     protected Money(){}
 
     public Money(BigDecimal amount, Currency currency) {
-        if (amount == null ||  currency == null) {
+        if (amount == null && currency == null) {
             throw new IllegalArgumentException("Money amount and currency cannot be null");
         }
 
