@@ -1,8 +1,8 @@
 package com.finflow.finflowbackend.user;
 
+import com.finflow.finflowbackend.account.Account;
 import com.finflow.finflowbackend.common.enums.AuthMethod;
 import com.finflow.finflowbackend.common.enums.UserStatus;
-import com.finflow.finflowbackend.currency.Currency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -66,5 +66,5 @@ public class User {
     private Instant lastLoginAt;
 
     @OneToMany(mappedBy = "user")
-    private List<FinancialAccount> financialAccounts = new ArrayList<>();
+    private List<Account> financialAccounts = new ArrayList<>();
 }

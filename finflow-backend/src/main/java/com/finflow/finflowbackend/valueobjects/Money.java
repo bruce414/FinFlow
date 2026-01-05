@@ -2,10 +2,12 @@ package com.finflow.finflowbackend.valueobjects;
 
 import com.finflow.finflowbackend.currency.Currency;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 
 @Embeddable
+@Getter
 public class Money {
 
     @Column(nullable = false, precision = 19, scale = 6)
