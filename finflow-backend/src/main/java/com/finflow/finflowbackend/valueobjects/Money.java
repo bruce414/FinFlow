@@ -1,4 +1,4 @@
-package com.finflow.finflowbackend.ValueObjects;
+package com.finflow.finflowbackend.valueobjects;
 
 import com.finflow.finflowbackend.currency.Currency;
 import jakarta.persistence.*;
