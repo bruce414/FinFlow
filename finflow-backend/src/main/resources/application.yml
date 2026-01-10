@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: finflowBackend
+
+  flyway:
+    locations: classpath:db/migration
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
