@@ -46,17 +46,25 @@ public class Account extends BaseEntity {
     private String institutionCode;
 
     @Embedded
+    @AttributeOverride(
+            name = "amount",
+            column = @Column(name = "account_balance", nullable = false)
+    )
+    @AssociationOverride(
+            name = "currency",
+            joinColumns = @JoinColumn(name = "currency_code", referencedColumnName = "code", nullable = false)
+    )
     private Money accountMoney;
 
     @Column(precision = 19, scale = 4)
-    private BigDecimal creditLimit;
+    private BigDecimal creditLimit; //DO NOT ADD THIS IN THE MVP MIGRATION SCRIPTS.
 
     @Column(nullable = false)
     private boolean active;
 
     private Instant closedAt;
 
-    public void deactive() {
+    public void deActive() {
         if (!this.active) {
             return;
         }

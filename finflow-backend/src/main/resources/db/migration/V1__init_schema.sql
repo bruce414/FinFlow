@@ -24,3 +24,27 @@ CREATE TABLE users (
             (auth_method <> 'LOCAL' AND password_hash IS NULL)
         )
 );
+
+CREATE TABLE accounts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    account_type VARCHAR(50) NOT NULL CHECK (account_type IN ('CASH', 'CREDIT_CARD', 'CHECKING', 'SAVINGS')),
+    account_name VARCHAR(100) NOT NULL,
+    account_number_last4 VARCHAR(4) NOT NULL,
+    institution_name VARCHAR(255) NOT NULL,
+    institution_code VARCHAR(40) NOT NULL,
+    account_balance DECIMAL(19, 6) NOT NULL DEFAULT 0,
+    currency_code VARCHAR(10) NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    closed_at TIMESTAMPTZ,
+
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+
+    CONSTRAINT fk_account_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+
+    CONSTRAINT fk_account_currency
+        FOREIGN KEY (currency_id) REFERENCES currencies(code)
+);
+
