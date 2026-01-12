@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class Currency {
 
     @Id
@@ -30,16 +31,25 @@ public class Currency {
     private boolean active = true;
 
     public Currency(String code, String name, int decimalScale, boolean active) {
-        if (code == null || code.length() < 3) {
-            throw new IllegalArgumentException("code length should be at least 3 characters");
+        if (code == null) throw new IllegalArgumentException("code is null");
+        String normalizedCode = code.trim().toUpperCase();
+        if (normalizedCode.length() != 3) throw new IllegalArgumentException("code length is not 3");
+
+        if (!normalizedCode.matches("[A-Z]{3}")) {
+            throw new IllegalArgumentException("code must contain only letters A-Z (ISO 4217 alpha code)");
         }
+
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("name must not be null or blank");
+        }
+        String normalizedName = name.trim();
 
         if (decimalScale < 0) {
-            throw new IllegalArgumentException("decimalScale should be at least 0");
+            throw new IllegalArgumentException("decimalScale must be >= 0");
         }
 
-        this.code = code;
-        this.name = name;
+        this.code = normalizedCode;
+        this.name = normalizedName;
         this.decimalScale = decimalScale;
         this.active = active;
     }

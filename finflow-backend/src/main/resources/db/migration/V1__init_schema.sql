@@ -76,3 +76,10 @@ CREATE TABLE transactions (
         FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
+CREATE TABLE currencies (
+    code CHAR(3) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    decimal_scale INT NOT NULL CHECK (decimal_scale > 0),
+    active BOOLEAN NOT NULL DEFAULT TRUE
+);
+
