@@ -2,10 +2,8 @@ package com.finflow.finflowbackend.transaction;
 
 import com.finflow.finflowbackend.account.Account;
 import com.finflow.finflowbackend.category.Category;
-import com.finflow.finflowbackend.common.enums.CounterpartyType;
-import com.finflow.finflowbackend.common.enums.TransactionDirection;
-import com.finflow.finflowbackend.common.enums.TransactionOrigin;
-import com.finflow.finflowbackend.common.enums.TransactionType;
+import com.finflow.finflowbackend.common.enums.*;
+import com.finflow.finflowbackend.common.persistence.BaseEntity;
 import com.finflow.finflowbackend.valueobjects.Money;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -26,7 +24,7 @@ import java.util.UUID;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Transaction {
+public class Transaction extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -50,16 +48,14 @@ public class Transaction {
     private TransactionType type;
 
     @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(
-                    name = "amount",
-                    column = @Column(name = "transaction_amount", nullable = false)
-            ),
-            @AttributeOverride(
-                    name = "currency",
-                    column = @Column(name = "transaction_currency", nullable = false)
-            )
-    })
+    @AttributeOverride(
+            name = "amount",
+            column = @Column(name = "transaction_amount", nullable = false, precision = 19, scale = 6)
+    )
+    @AssociationOverride(
+            name = "currency",
+            joinColumns = @JoinColumn(name = "transaction_currency_code", referencedColumnName = "code", nullable = false)
+    )
     private Money transactionMoney;
 
     @Column(name = "posted_date", nullable = false)

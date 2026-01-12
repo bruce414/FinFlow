@@ -14,14 +14,14 @@ public class Money {
     private BigDecimal amount;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "code")
+    @JoinColumn(name = "currency_code", referencedColumnName = "code")
     private Currency currency;
 
     protected Money(){}
 
     public Money(BigDecimal amount, Currency currency) {
-        if (amount == null && currency == null) {
-            throw new IllegalArgumentException("Money amount and currency cannot be null");
+        if (amount == null || currency == null) {
+            throw new IllegalArgumentException("Money amount or currency cannot be null");
         }
 
         this.amount = amount;
@@ -39,7 +39,7 @@ public class Money {
     }
 
     private void requireSameCurrency(Money otherMoney) {
-        if (this.currency.equals(otherMoney.currency)) {
+        if (!this.currency.equals(otherMoney.currency)) {
             throw new IllegalArgumentException("Money currency are not the same");
         }
     }
