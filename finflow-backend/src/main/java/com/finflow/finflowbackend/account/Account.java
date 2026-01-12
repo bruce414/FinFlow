@@ -56,7 +56,7 @@ public class Account extends BaseEntity {
     )
     private Money accountMoney;
 
-    @Column(precision = 19, scale = 4)
+    @Column(precision = 19, scale = 6)
     private BigDecimal creditLimit; //DO NOT ADD THIS IN THE MVP MIGRATION SCRIPTS.
 
     @Column(nullable = false)

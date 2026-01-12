@@ -25,6 +25,13 @@ CREATE TABLE users (
         )
 );
 
+CREATE TABLE currencies (
+    code VARCHAR(3) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    decimal_scale INT NOT NULL CHECK (decimal_scale > 0),
+    active BOOLEAN NOT NULL DEFAULT TRUE
+);
+
 CREATE TABLE accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
@@ -35,6 +42,7 @@ CREATE TABLE accounts (
     institution_code VARCHAR(40) NOT NULL,
     account_balance DECIMAL(19, 6) NOT NULL DEFAULT 0,
     currency_code VARCHAR(10) NOT NULL,
+    credit_limit DECIMAL(19, 6),
     active BOOLEAN NOT NULL DEFAULT TRUE,
     closed_at TIMESTAMPTZ,
 
@@ -46,6 +54,24 @@ CREATE TABLE accounts (
 
     CONSTRAINT fk_account_currency
         FOREIGN KEY (currency_code) REFERENCES currencies(code)
+);
+
+CREATE TABLE categories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    icon VARCHAR(50),
+    color_hex VARCHAR(7) NOT NULL,
+    system_defined BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMPTZ,
+
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+
+    CONSTRAINT fk_category_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+
+    CONSTRAINT uq_category_user_name UNIQUE (user_id, name)
 );
 
 CREATE TABLE transactions (
@@ -74,30 +100,5 @@ CREATE TABLE transactions (
 
     CONSTRAINT fk_transaction_category
         FOREIGN KEY (category_id) REFERENCES categories(id)
-);
-
-CREATE TABLE currencies (
-    code CHAR(3) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    decimal_scale INT NOT NULL CHECK (decimal_scale > 0),
-    active BOOLEAN NOT NULL DEFAULT TRUE
-);
-
-CREATE TABLE categories (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    icon VARCHAR(50),
-    color_hex VARCHAR(7) NOT NULL,
-    system_defined BOOLEAN NOT NULL DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ,
-
-    created_at TIMESTAMPTZ NOT NULL,
-    updated_at TIMESTAMPTZ NOT NULL,
-
-    CONSTRAINT fk_category_user
-        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-
-    CONSTRAINT uq_category_user_name UNIQUE (user_id, name)
 );
 
