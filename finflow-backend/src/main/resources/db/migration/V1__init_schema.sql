@@ -45,6 +45,34 @@ CREATE TABLE accounts (
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
 
     CONSTRAINT fk_account_currency
-        FOREIGN KEY (currency_id) REFERENCES currencies(code)
+        FOREIGN KEY (currency_code) REFERENCES currencies(code)
+);
+
+CREATE TABLE transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    account_id UUID NOT NULL,
+    origin VARCHAR(15) NOT NULL CHECK (origin IN ('USER', 'SYSTEM', 'IMPORT', 'OPEN_BANKING')),
+    direction VARCHAR(4) NOT NULL CHECK (direction IN ('IN', 'OUT')),
+    type VARCHAR(10) NOT NULL CHECK (type IN ('CREDIT', 'DEBIT', 'TRANSFER')),
+    transaction_amount DECIMAL(19, 6) NOT NULL DEFAULT 0,
+    transaction_currency_code VARCHAR(10) NOT NULL,
+    posted_date DATE NOT NULL,
+    reference VARCHAR(255),
+    transaction_status VARCHAR(10) NOT NULL CHECK (transaction_status IN ('PENDING', 'POSTED', 'REVERSED', 'DELETED')),
+    category_id UUID,
+    counterparty_name VARCHAR(255) NOT NULL,
+    counterparty_type VARCHAR(15) NOT NULL CHECK (counterparty_type IN ('PERSON', 'MERCHANT', 'BANK', 'GOVERNMENT', 'UNKNOWN')),
+
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+
+    CONSTRAINT fk_transaction_account
+        FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+
+    CONSTRAINT fk_transaction_currency
+        FOREIGN KEY (transaction_currency_code) REFERENCES currencies(code),
+
+    CONSTRAINT fk_transaction_category
+        FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 

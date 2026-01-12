@@ -48,7 +48,7 @@ public class Account extends BaseEntity {
     @Embedded
     @AttributeOverride(
             name = "amount",
-            column = @Column(name = "account_balance", nullable = false)
+            column = @Column(name = "account_balance", nullable = false, precision = 19, scale = 6)
     )
     @AssociationOverride(
             name = "currency",
