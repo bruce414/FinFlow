@@ -83,3 +83,21 @@ CREATE TABLE currencies (
     active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+CREATE TABLE categories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    icon VARCHAR(50),
+    color_hex VARCHAR(7) NOT NULL,
+    system_defined BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMPTZ,
+
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+
+    CONSTRAINT fk_category_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+
+    CONSTRAINT uq_category_user_name UNIQUE (user_id, name)
+);
+

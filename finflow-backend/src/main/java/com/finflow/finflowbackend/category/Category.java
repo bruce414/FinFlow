@@ -1,5 +1,6 @@
 package com.finflow.finflowbackend.category;
 
+import com.finflow.finflowbackend.common.persistence.BaseEntity;
 import com.finflow.finflowbackend.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +18,7 @@ import java.util.UUID;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Category {
+public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,7 +50,7 @@ public class Category {
     }
 
     public void softDelete() {
-        if (!isDeleted()) {
+        if (isDeleted()) {
             return;
         }
         if (this.systemDefined) {
@@ -62,7 +63,8 @@ public class Category {
         if (this.systemDefined) {
             throw new IllegalStateException("Cannot rename system defined category");
         }
-        this.name = name;
+        validateCategoryInput(name, this.colorHex);
+        this.name = name.trim();
     }
 
     public static Category create(User user, String name, String colorHex, boolean systemDefined) {
@@ -85,7 +87,7 @@ public class Category {
     }
 
     private static void validateCategoryInput(String name, String colorHex) {
-        if (name.isBlank()) {
+        if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Category name is required");
         }
 
