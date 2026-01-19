@@ -21,7 +21,6 @@ import java.util.UUID;
         name = "users"
 )
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseEntity {

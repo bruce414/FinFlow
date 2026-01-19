@@ -1,1 +1,6 @@
 # This file contains all profile / startup info for prod env
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
