@@ -1,6 +1,7 @@
 package com.finflow.finflowbackend.budget;
 
 import com.finflow.finflowbackend.category.Category;
+import com.finflow.finflowbackend.common.enums.PeriodType;
 import com.finflow.finflowbackend.common.persistence.BaseEntity;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.valueobjects.Money;
@@ -9,7 +10,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
