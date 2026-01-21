@@ -1,7 +1,7 @@
 package com.finflow.finflowbackend.common.enums;
 
 public enum TransactionOrigin {
-    USER,
+    MANUAL,
     SYSTEM,
     IMPORT,
     OPEN_BANKING
