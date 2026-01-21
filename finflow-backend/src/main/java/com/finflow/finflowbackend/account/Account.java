@@ -33,8 +33,13 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private AccountType accountType;
 
+    //The account's default name
     @Column(nullable = false)
-    private String accountName;
+    private String providerAccountName;
+
+    //The account name users can customize
+    @Column
+    private String accountDisplayName;
 
     @Column(nullable = false, length = 4)
     private String accountNumberLast4;
@@ -56,9 +61,6 @@ public class Account extends BaseEntity {
     )
     private Money accountMoney;
 
-    @Column(precision = 19, scale = 6)
-    private BigDecimal creditLimit; //DO NOT ADD THIS IN THE MVP MIGRATION SCRIPTS.
-
     @Column(nullable = false)
     private boolean active;
 
@@ -74,7 +76,7 @@ public class Account extends BaseEntity {
     public static Account createAccount(
         User user,
         AccountType accountType,
-        String accountName,
+        String accountDisplayName,
         String accountNumberLast4,
         String institutionName,
         String institutionCode,
@@ -83,7 +85,7 @@ public class Account extends BaseEntity {
         Objects.requireNonNull(user, "user cannot be null");
         Objects.requireNonNull(accountType, "accountType cannot be null");
 
-        String name = requireNotBlank(accountName, "accountName cannot be blank");
+        String name = requireNotBlank(accountDisplayName, "account display name cannot be blank");
         String instName = requireNotBlank(institutionName, "institutionName cannot be blank");
         String instCode = requireNotBlank(institutionCode, "institutionCode cannot be blank").trim();
 
@@ -95,7 +97,7 @@ public class Account extends BaseEntity {
         Account account = new Account();
         account.user = user;
         account.accountType = accountType;
-        account.accountName = name.trim();
+        account.accountDisplayName = name.trim();
         account.accountNumberLast4 = handleAccountNumberLast4(accountType, accountNumberLast4);
         account.institutionName = instName;
         account.institutionCode = instCode;
