@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -17,7 +18,6 @@ import java.util.UUID;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Account extends BaseEntity {
 
     @Id
@@ -71,6 +71,68 @@ public class Account extends BaseEntity {
         this.active = false;
     }
 
+    public static Account createAccount(
+        User user,
+        AccountType accountType,
+        String accountName,
+        String accountNumberLast4,
+        String institutionName,
+        String institutionCode,
+        Money accountMoney
+    ) {
+        Objects.requireNonNull(user, "user cannot be null");
+        Objects.requireNonNull(accountType, "accountType cannot be null");
+
+        String name = requireNotBlank(accountName, "accountName cannot be blank");
+        String instName = requireNotBlank(institutionName, "institutionName cannot be blank");
+        String instCode = requireNotBlank(institutionCode, "institutionCode cannot be blank").trim();
+
+        Money money = Objects.requireNonNull(accountMoney, "accountMoney cannot be null");
+        if (money.getCurrency() == null) throw new IllegalArgumentException("accountMoney currency cannot be null");
+        if (money.getAmount() == null) throw new IllegalArgumentException("accountMoney amount cannot be null");
+        if (money.getAmount().signum() < 0) throw new IllegalArgumentException("opening balance cannot be negative");
+
+        Account account = new Account();
+        account.user = user;
+        account.accountType = accountType;
+        account.accountName = name.trim();
+        account.accountNumberLast4 = handleAccountNumberLast4(accountType, accountNumberLast4);
+        account.institutionName = instName;
+        account.institutionCode = instCode;
+        account.accountMoney = money;
+
+        account.active = true;
+        account.closedAt = null;
+
+        return account;
+    }
+
+    private static String requireNotBlank(String value, String message) {
+        if (value == null || value.isBlank()) throw new IllegalArgumentException(message);
+        return value;
+    }
+
+    private static final String LAST4_NOT_APPLICABLE = "0000";
+    public static String handleAccountNumberLast4(AccountType accountType, String accountNumberLast4) {
+        if (accountType == AccountType.CASH) {
+            return LAST4_NOT_APPLICABLE;
+        }
+
+        if (accountNumberLast4 == null || accountNumberLast4.isBlank()) {
+            throw new IllegalArgumentException("accountNumberLast4 is required for non-cash accounts");
+        }
+
+        String normalized = accountNumberLast4.trim();
+        if (!normalized.matches("^\\d{4}$")) {
+            throw new IllegalArgumentException("accountNumberLast4 must be exactly 4 digits for non-cash accounts");
+        }
+        if (LAST4_NOT_APPLICABLE.equals(normalized)) {
+            throw new IllegalArgumentException("accountNumberLast4 cannot be 0000 for non-cash accounts");
+        }
+        return normalized;
+    }
+
+    //For updating the account balance - IN
     public void credit(Money moneyIn) {
         this.validateMoney(moneyIn);
 
@@ -80,6 +142,7 @@ public class Account extends BaseEntity {
         this.accountMoney = this.accountMoney.add(moneyIn);
     }
 
+    //For updating the account balance - OUT
     public void debit(Money moneyOut) {
         this.validateMoney(moneyOut);
 
@@ -95,6 +158,7 @@ public class Account extends BaseEntity {
         this.accountMoney = newAccountBalance;
     }
 
+    //Validate if the input Money object is valid
     private void validateMoney(Money newMoney) {
         if (newMoney == null) {
             throw new IllegalArgumentException("Money cannot be null");
