@@ -16,7 +16,7 @@ import java.util.UUID;
         name = "accounts"
 )
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Account extends BaseEntity {
 
