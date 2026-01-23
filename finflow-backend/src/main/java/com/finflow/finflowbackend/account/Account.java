@@ -6,6 +6,7 @@ import com.finflow.finflowbackend.common.persistence.BaseEntity;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.valueobjects.Money;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -43,7 +44,7 @@ public class Account extends BaseEntity {
     private String providerAccountName;
 
     //The account name users can customize
-    @Column
+    @Column(name = "account_display_name", length = 30)
     private String accountDisplayName;
 
     @Column(nullable = false, length = 4)
