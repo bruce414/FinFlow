@@ -36,6 +36,7 @@ CREATE TABLE accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
     account_type VARCHAR(50) NOT NULL CHECK (account_type IN ('CASH', 'CREDIT_CARD', 'CHECKING', 'SAVINGS')),
+    account_origin VARCHAR(50) NOT NULL CHECK (account_origin IN ('MANUAL', 'OPEN_BANKING', 'IMPORT')),
     provider_account_name VARCHAR(100) NOT NULL,
     account_display_name VARCHAR(100),
     account_number_last4 VARCHAR(4) NOT NULL,
@@ -77,7 +78,7 @@ CREATE TABLE categories (
 CREATE TABLE transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     account_id UUID NOT NULL,
-    origin VARCHAR(15) NOT NULL CHECK (origin IN ('USER', 'SYSTEM', 'IMPORT', 'OPEN_BANKING')),
+    origin VARCHAR(15) NOT NULL CHECK (origin IN ('MANUAL', 'SYSTEM', 'IMPORT', 'OPEN_BANKING')),
     direction VARCHAR(4) NOT NULL CHECK (direction IN ('IN', 'OUT')),
     type VARCHAR(10) NOT NULL CHECK (type IN ('CREDIT', 'DEBIT', 'TRANSFER')),
     transaction_amount DECIMAL(19, 6) NOT NULL DEFAULT 0,
@@ -100,5 +101,40 @@ CREATE TABLE transactions (
 
     CONSTRAINT fk_transaction_category
         FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE budgets (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    budget_name VARCHAR(255) NOT NULL,
+    period_type VARCHAR(20) NOT NULL CHECK (period_type IN ('DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY', 'YEARLY', 'CUSTOM')),
+    custom_interval_period int,
+    start_date DATE NOT NULL,
+    budget_amount DECIMAL(19, 6) NOT NULL,
+    budget_currency_code VARCHAR(3) NOT NULL,
+    enable_rollover BOOLEAN NOT NULL DEFAULT TRUE,
+    category_id UUID NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+
+    CONSTRAINT fk_budget_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+
+    CONSTRAINT fk_budget_currency
+        FOREIGN KEY (budget_currency_code) REFERENCES currencies(code),
+
+    CONSTRAINT fk_budget_category
+        FOREIGN KEY (category_id) REFERENCES categories(id),
+
+    CONSTRAINT chk_budget_custom_interval
+        CHECK (
+            (period_type = 'CUSTOM' AND custom_interval_period IS NOT NULL AND custom_interval_period > 0)
+            OR
+            (period_type <> 'CUSTOM' AND (custom_interval_period IS NULL OR custom_interval_period = 0))
+        ),
+
+    CONSTRAINT uq_budgets_user_name UNIQUE (user_id, budget_name)
 );
 

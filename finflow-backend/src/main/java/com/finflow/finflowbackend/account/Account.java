@@ -1,5 +1,6 @@
 package com.finflow.finflowbackend.account;
 
+import com.finflow.finflowbackend.common.enums.AccountOrigin;
 import com.finflow.finflowbackend.common.enums.AccountType;
 import com.finflow.finflowbackend.common.persistence.BaseEntity;
 import com.finflow.finflowbackend.user.User;
@@ -32,6 +33,10 @@ public class Account extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccountType accountType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountOrigin accountOrigin;
 
     //The account's default name
     @Column(nullable = false)

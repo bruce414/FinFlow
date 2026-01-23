@@ -59,7 +59,7 @@ public class Budget extends BaseEntity {
     private Money budgetMoney;
 
     @Column(nullable = false)
-    private boolean enableRollover;
+    private boolean enableRollover = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
