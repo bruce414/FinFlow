@@ -1,19 +1,17 @@
 package com.finflow.finflowbackend.account.dto;
 
-import com.finflow.finflowbackend.common.enums.AccountType;
-import com.finflow.finflowbackend.currency.Currency;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
 
 import java.math.BigDecimal;
 
 public record AccountCreateDto(
+    @Size(min = 1, max = 30)
+    String accountDisplayName,
+
     @NotNull
     @NotBlank
     @Size(min = 1, max = 30)
-    String accountName,
+    String providerAccountName,
 
     @NotNull
     String accountType,
