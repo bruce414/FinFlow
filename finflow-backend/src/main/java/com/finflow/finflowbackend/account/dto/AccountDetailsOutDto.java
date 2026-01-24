@@ -1,5 +1,6 @@
 package com.finflow.finflowbackend.account.dto;
 
+import com.finflow.finflowbackend.common.dtos.money.MoneyResponseDto;
 import com.finflow.finflowbackend.common.enums.AccountOrigin;
 import com.finflow.finflowbackend.common.enums.AccountType;
 
@@ -15,8 +16,6 @@ public record AccountDetailsOutDto(
     String accountNumberLast4,
     String institutionName,
     String institutionCode,
-    BigDecimal accountBalance,
-    String accountCurrencyCode,
-    String accountCurrencyName,
+    MoneyResponseDto money,
     boolean active
 ) {}
