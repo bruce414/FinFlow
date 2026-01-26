@@ -24,7 +24,7 @@ public record LocalUserCreateDto(
 
         @NotBlank
         @Size(min = 8, max = 72)
-        String Password,
+        String password,
 
         @NotNull
         @Past
