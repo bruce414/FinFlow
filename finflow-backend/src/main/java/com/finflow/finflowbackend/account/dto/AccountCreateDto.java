@@ -30,13 +30,4 @@ public record AccountCreateDto(
     @NotNull
     @Valid
     MoneyRequestDto moneyRequest
-
-//    @NotNull
-//    @Digits(integer = 13, fraction = 6)
-//    BigDecimal accountBalance,
-//
-//    @NotNull
-//    @NotBlank
-//    @Size(min = 3, max = 3)
-//    String accountCurrencyCode
 ) {}
