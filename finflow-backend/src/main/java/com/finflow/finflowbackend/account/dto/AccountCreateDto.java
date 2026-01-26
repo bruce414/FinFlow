@@ -37,7 +37,5 @@ public record AccountCreateDto(
     @NotNull
     @NotBlank
     @Size(min = 3, max = 3)
-    String accountCurrencyCode,
-
-    BigDecimal creditLimit
+    String accountCurrencyCode
 ) {}
