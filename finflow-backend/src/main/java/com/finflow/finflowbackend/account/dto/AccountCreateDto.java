@@ -1,14 +1,13 @@
 package com.finflow.finflowbackend.account.dto;
 
+import com.finflow.finflowbackend.common.dtos.money.MoneyRequestDto;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-
-import java.math.BigDecimal;
 
 public record AccountCreateDto(
     @Size(min = 1, max = 30)
     String accountDisplayName,
 
-    @NotNull
     @NotBlank
     @Size(min = 1, max = 30)
     String providerAccountName,
@@ -20,22 +19,24 @@ public record AccountCreateDto(
     @Pattern(regexp = "^\\d{4}$")
     String accountNumberLast4,
 
-    @NotNull
     @NotBlank
     @Size(min = 1, max = 50)
     String institutionName,
 
-    @NotNull
     @NotBlank
     @Size(min = 3, max = 3)
     String institutionCode,
 
     @NotNull
-    @Digits(integer = 13, fraction = 6)
-    BigDecimal accountBalance,
+    @Valid
+    MoneyRequestDto moneyRequest
 
-    @NotNull
-    @NotBlank
-    @Size(min = 3, max = 3)
-    String accountCurrencyCode
+//    @NotNull
+//    @Digits(integer = 13, fraction = 6)
+//    BigDecimal accountBalance,
+//
+//    @NotNull
+//    @NotBlank
+//    @Size(min = 3, max = 3)
+//    String accountCurrencyCode
 ) {}
