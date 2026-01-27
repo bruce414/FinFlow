@@ -67,7 +67,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<Account> financialAccounts = new ArrayList<>();
 
-    public static User createUser(
+    public static User createLocalUser(
             String firstName,
             String lastName,
             AuthMethod authMethod,
@@ -87,11 +87,31 @@ public class User extends BaseEntity {
         user.dateOfBirth = requirePastDate(dateOfBirth, "Date of Birth");
         user.timeZone = requireNonBlank(timeZone, "Time Zone");
 
-        user.status = UserStatus.ACTIVE;
+        user.status = UserStatus.PENDING_VERIFICATION;
         user.lastLoginAt = null;
 
         user.assertInvariants();
         return user;
+    }
+
+    public void changeFirstName(String firstName) {
+        this.firstName = normalizeName(firstName);
+    }
+
+    public void changeLastName(String lastName) {
+        this.lastName = normalizeName(lastName);
+    }
+
+    public void changePhoneNumber(String phoneNumber) {
+        this.phoneNumber = requireNonBlank(phoneNumber, "Phone Number");
+    }
+
+    public void changeDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = requirePastDate(dateOfBirth, "dateOfBirth");
+    }
+
+    public void changeTimeZone(String timeZone) {
+        this.timeZone = requireNonBlank(timeZone, "Timezone");
     }
 
     private void assertInvariants() {
