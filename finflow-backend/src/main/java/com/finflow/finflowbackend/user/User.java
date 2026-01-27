@@ -94,23 +94,23 @@ public class User extends BaseEntity {
         return user;
     }
 
-    public void changeFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = normalizeName(firstName);
     }
 
-    public void changeLastName(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = normalizeName(lastName);
     }
 
-    public void changePhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = requireNonBlank(phoneNumber, "Phone Number");
     }
 
-    public void changeDateOfBirth(LocalDate dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = requirePastDate(dateOfBirth, "dateOfBirth");
     }
 
-    public void changeTimeZone(String timeZone) {
+    public void setTimeZone(String timeZone) {
         this.timeZone = requireNonBlank(timeZone, "Timezone");
     }
 
