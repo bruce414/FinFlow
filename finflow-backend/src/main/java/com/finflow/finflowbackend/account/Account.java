@@ -6,10 +6,8 @@ import com.finflow.finflowbackend.common.persistence.BaseEntity;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.valueobjects.Money;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -119,6 +117,10 @@ public class Account extends BaseEntity {
         account.closedAt = null;
 
         return account;
+    }
+
+    public void setAccountDisplayName(String accountDisplayName) {
+        this.accountDisplayName = requireNotBlank(accountDisplayName, "account display name cannot be blank");
     }
 
     private static String requireNotBlank(String value, String message) {
