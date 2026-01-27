@@ -11,7 +11,7 @@ CREATE TABLE users (
     password_hash VARCHAR(255),
     date_of_birth DATE NOT NULL,
     time_zone VARCHAR(100) NOT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'SUSPENDED', 'DELETED')),
+    status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'PENDING_VERIFICATION', 'SUSPENDED', 'DELETED')),
     last_login_at TIMESTAMPTZ,
 
     created_at TIMESTAMPTZ NOT NULL,
