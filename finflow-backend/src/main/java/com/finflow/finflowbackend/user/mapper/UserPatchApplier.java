@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserPatchApplier {
     public void apply(UserPatchDto userPatchDto, User user) {
-        if (userPatchDto.firstName() != null) user.changeFirstName(userPatchDto.firstName());
-        if (userPatchDto.lastName() != null) user.changeLastName(userPatchDto.lastName());
-        if (userPatchDto.phoneNumber() != null) user.changePhoneNumber(userPatchDto.phoneNumber());
-        if (userPatchDto.dateOfBirth() != null) user.changeDateOfBirth(userPatchDto.dateOfBirth());
-        if (userPatchDto.timeZone() != null) user.changeTimeZone(userPatchDto.timeZone());
+        if (userPatchDto.firstName() != null) user.setFirstName(userPatchDto.firstName());
+        if (userPatchDto.lastName() != null) user.setLastName(userPatchDto.lastName());
+        if (userPatchDto.phoneNumber() != null) user.setPhoneNumber(userPatchDto.phoneNumber());
+        if (userPatchDto.dateOfBirth() != null) user.setDateOfBirth(userPatchDto.dateOfBirth());
+        if (userPatchDto.timeZone() != null) user.setTimeZone(userPatchDto.timeZone());
     }
 }

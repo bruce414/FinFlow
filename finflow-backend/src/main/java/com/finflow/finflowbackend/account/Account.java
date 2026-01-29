@@ -92,7 +92,6 @@ public class Account extends BaseEntity {
         Objects.requireNonNull(accountType, "accountType cannot be null");
         Objects.requireNonNull(accountOrigin, "accountOrigin cannot be null");
 
-        String displayName = requireNotBlank(accountDisplayName, "account display name cannot be blank");
         String defaultName = requireNotBlank(providerAccountName, "account provider name cannot be blank");
         String instName = requireNotBlank(institutionName, "institutionName cannot be blank");
         String instCode = requireNotBlank(institutionCode, "institutionCode cannot be blank").trim();
@@ -106,7 +105,13 @@ public class Account extends BaseEntity {
         account.user = user;
         account.accountType = accountType;
         account.accountOrigin = accountOrigin;
-        account.accountDisplayName = displayName.trim();
+
+        if (accountDisplayName == null) {
+            account.accountDisplayName = null;
+        } else {
+            account.accountDisplayName = requireNotBlank(accountDisplayName, "account display name cannot be blank");
+        }
+
         account.providerAccountName = defaultName.trim();
         account.accountNumberLast4 = handleAccountNumberLast4(accountType, accountNumberLast4);
         account.institutionName = instName;
