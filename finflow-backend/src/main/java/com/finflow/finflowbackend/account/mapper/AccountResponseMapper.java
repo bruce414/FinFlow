@@ -10,7 +10,6 @@ public interface AccountResponseMapper {
 
     //Account -> AccountDetailsOutDto
     @Mapping(source = "id", target = "accountId")
-    @Mapping(source = "accountMoney.amount", target = "money.amount")
-    @Mapping(source = "accountMoney.currency", target = "money.currencyCode")
+    @Mapping(source = "accountMoney", target = "money")
     AccountDetailsOutDto toAccountDetailsOutDto(Account account);
 }
