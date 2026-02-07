@@ -20,7 +20,7 @@ public class UserController {
 
     private final UserService userService;
 
-    public  UserController(UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -37,7 +37,7 @@ public class UserController {
     /*
      * Endpoint: Get user by id
      */
-    @GetMapping("/me")
+    @GetMapping("/{userId}")
     public ResponseEntity<UserDetailsOutDto> getUserById(@PathVariable @NotNull UUID userId) {
 
         //Complete the body to replace this
