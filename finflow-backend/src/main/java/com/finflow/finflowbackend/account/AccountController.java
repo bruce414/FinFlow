@@ -30,7 +30,9 @@ public class AccountController {
      * Endpoint: Create an account object
      */
     @PostMapping
-    public ResponseEntity<AccountDetailsOutDto> createAccount(@RequestBody @Valid AccountCreateDto accountCreateDto) {
+    public ResponseEntity<AccountDetailsOutDto> createAccount(
+            @PathVariable @NotNull UUID userId,
+            @RequestBody @Valid AccountCreateDto accountCreateDto) {
 
         //Complete the body to replace this
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
@@ -40,7 +42,9 @@ public class AccountController {
      * Endpoint: Get the account by id
      */
     @GetMapping("/{accountId}")
-    public ResponseEntity<AccountDetailsOutDto> getAccountById(@PathVariable UUID accountId) {
+    public ResponseEntity<AccountDetailsOutDto> getAccountById(
+            @PathVariable @NotNull UUID userId,
+            @PathVariable @NotNull UUID accountId) {
 
         //Complete the body to replace this
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
@@ -61,6 +65,7 @@ public class AccountController {
      */
     @PatchMapping("/{accountId}")
     public ResponseEntity<AccountDetailsOutDto> changeAccountNameById(
+            @PathVariable @NotNull UUID userId,
             @PathVariable @NotNull UUID accountId,
             @RequestBody @Valid AccountRenameDto accountRenameDto
     ) {
@@ -73,7 +78,9 @@ public class AccountController {
      * Endpoint: Delete the account by id
      */
     @DeleteMapping("/{accountId}")
-    public ResponseEntity<Void> deleteAccountById(@PathVariable UUID accountId) {
+    public ResponseEntity<Void> deleteAccountById(
+            @PathVariable UUID userId,
+            @PathVariable UUID accountId) {
 
         //Complete the body to replace this
         return ResponseEntity.noContent().build();
