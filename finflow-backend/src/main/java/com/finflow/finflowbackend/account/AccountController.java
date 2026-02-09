@@ -54,7 +54,7 @@ public class AccountController {
      * Endpoint: List all account by userId
      */
     @GetMapping
-    public ResponseEntity<List<AccountSummaryResponseDto>> getAllAccountsByUserId(@RequestParam @NotNull UUID userId) {
+    public ResponseEntity<List<AccountSummaryResponseDto>> getAllAccountsByUserId(@PathVariable @NotNull UUID userId) {
 
         //Complete the body to replace this
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();

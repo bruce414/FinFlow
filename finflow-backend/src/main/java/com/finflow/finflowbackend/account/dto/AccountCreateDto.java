@@ -12,8 +12,11 @@ public record AccountCreateDto(
     @Size(min = 1, max = 30)
     String providerAccountName,
 
-    @NotNull
+    @NotBlank
     String accountType,
+
+    @NotBlank
+    String accountOrigin,
 
     @Size(min = 4, max = 4)
     @Pattern(regexp = "^\\d{4}$")
