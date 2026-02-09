@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -59,10 +60,15 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Setter
     private UserStatus status;
 
     @Column
     private Instant lastLoginAt;
+
+    @Column
+    @Setter
+    private Instant deactivatedAt;
 
     @OneToMany(mappedBy = "user")
     private List<Account> financialAccounts = new ArrayList<>();
