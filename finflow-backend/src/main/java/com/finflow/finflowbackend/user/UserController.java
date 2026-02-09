@@ -29,9 +29,8 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<UserDetailsOutDto> createLocalUser(@RequestBody @Valid LocalUserCreateDto localUserCreateDto) {
-
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        UserDetailsOutDto createdUser = userService.createLocalUser(localUserCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     /*
@@ -39,9 +38,7 @@ public class UserController {
      */
     @GetMapping("/{userId}")
     public ResponseEntity<UserDetailsOutDto> getUserById(@PathVariable @NotNull UUID userId) {
-
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     /*
@@ -52,18 +49,17 @@ public class UserController {
             @PathVariable("userId") @NotNull UUID userId,
             @RequestBody @Valid UserPatchDto userPatchDto
     ) {
-
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(userService.patchUser(userId, userPatchDto));
     }
 
     /*
      * Endpoint: Delete user by id
      */
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUserById(@PathVariable @NotNull UUID userId) {
 
-        //Complete the body to replace this
+    //In Fintech system, soft delete is always chosen over hard delete.
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deActiveUserById(@PathVariable @NotNull UUID userId) {
+        userService.deActiveUser(userId);
         return ResponseEntity.noContent().build();
     }
 }

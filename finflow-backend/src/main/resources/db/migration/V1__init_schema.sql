@@ -13,6 +13,7 @@ CREATE TABLE users (
     time_zone VARCHAR(100) NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'PENDING_VERIFICATION', 'SUSPENDED', 'DELETED')),
     last_login_at TIMESTAMPTZ,
+    deactivated_at TIMESTAMPTZ,
 
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
