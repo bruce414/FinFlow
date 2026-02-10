@@ -34,8 +34,8 @@ public class AccountController {
             @PathVariable @NotNull UUID userId,
             @RequestBody @Valid AccountCreateDto accountCreateDto) {
 
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        AccountDetailsOutDto createdAccount = accountService.createAccount(userId, accountCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
     }
 
     /*
@@ -46,18 +46,16 @@ public class AccountController {
             @PathVariable @NotNull UUID userId,
             @PathVariable @NotNull UUID accountId) {
 
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(accountService.getAccountById(userId, accountId));
     }
 
     /*
      * Endpoint: List all account by userId
      */
     @GetMapping
-    public ResponseEntity<List<AccountSummaryResponseDto>> getAllAccountsByUserId(@RequestParam @NotNull UUID userId) {
+    public ResponseEntity<List<AccountSummaryResponseDto>> getAllAccountsByUserId(@PathVariable @NotNull UUID userId) {
 
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(accountService.getAllAccountsByUserId(userId));
     }
 
     /*
@@ -69,9 +67,7 @@ public class AccountController {
             @PathVariable @NotNull UUID accountId,
             @RequestBody @Valid AccountRenameDto accountRenameDto
     ) {
-
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(accountService.changeAccountNameById(userId, accountId, accountRenameDto));
     }
 
     /*
@@ -82,7 +78,7 @@ public class AccountController {
             @PathVariable UUID userId,
             @PathVariable UUID accountId) {
 
-        //Complete the body to replace this
+        accountService.deactiveAccount(userId, accountId);
         return ResponseEntity.noContent().build();
     }
 }
