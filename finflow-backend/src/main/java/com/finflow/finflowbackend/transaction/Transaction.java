@@ -48,14 +48,16 @@ public class Transaction extends BaseEntity {
     private TransactionType type;
 
     @Embedded
-    @AttributeOverride(
-            name = "amount",
-            column = @Column(name = "transaction_amount", nullable = false, precision = 19, scale = 6)
-    )
-    @AssociationOverride(
-            name = "currency",
-            joinColumns = @JoinColumn(name = "transaction_currency_code", referencedColumnName = "code", nullable = false)
-    )
+    @AttributeOverrides({
+            @AttributeOverride(
+                    name = "amount",
+                    column = @Column(name = "transaction_amount", nullable = false, precision = 19, scale = 6)
+            ),
+            @AttributeOverride(
+                    name = "currencyCode",
+                    column = @Column(name = "transaction_currency_code", nullable = false, length = 3)
+            )
+    })
     private Money transactionMoney;
 
     @Column(name = "posted_date", nullable = false)
@@ -84,7 +86,7 @@ public class Transaction extends BaseEntity {
 
     public static Transaction createTransaction(
             Account account,
-            Money money,
+            Money transactionMoney,
             LocalDate postedDate,
             TransactionDirection direction,
             TransactionType type,
@@ -94,7 +96,12 @@ public class Transaction extends BaseEntity {
     ) {
         Transaction transaction = new Transaction();
         transaction.account = Objects.requireNonNull(account, "account is required");
-        transaction.transactionMoney = Objects.requireNonNull(money, "money is required");
+
+        Money checkMoney = Objects.requireNonNull(transactionMoney, "transactionMoney cannot be null");
+        if (checkMoney.getCurrencyCode() == null) throw new IllegalArgumentException("transactionMoney currency cannot be null");
+        if (checkMoney.getAmount() == null) throw new IllegalArgumentException("transactionMoney amount cannot be null");
+        transaction.transactionMoney = checkMoney;
+
         transaction.postedDate = Objects.requireNonNull(postedDate,  "postedDate is required");
         transaction.counterpartyName = normalizeOrDefault(counterpartyName);
         transaction.counterpartyType = Objects.requireNonNull(counterpartyType, "counterpartyType is required");

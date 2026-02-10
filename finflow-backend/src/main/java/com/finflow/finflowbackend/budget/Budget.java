@@ -48,14 +48,16 @@ public class Budget extends BaseEntity {
     private LocalDate startDate;
 
     @Embedded
-    @AttributeOverride(
-            name = "amount",
-            column = @Column(name = "budget_amount", nullable = false, precision = 19, scale = 6)
-    )
-    @AssociationOverride(
-            name = "currency",
-            joinColumns = @JoinColumn(name = "budget_currency_code", referencedColumnName = "code", nullable = false)
-    )
+    @AttributeOverrides({
+            @AttributeOverride(
+                    name = "amount",
+                    column = @Column(name = "budget_amount", nullable = false, precision = 19, scale = 6)
+            ),
+            @AttributeOverride(
+                    name = "currencyCode",
+                    column = @Column(name = "budget_currency_code", nullable = false, length = 3)
+            )
+    })
     private Money budgetMoney;
 
     @Column(nullable = false)
@@ -98,7 +100,13 @@ public class Budget extends BaseEntity {
         budget.periodType = Objects.requireNonNull(periodType, "Period type must not be null");
         budget.customIntervalPeriod = customIntervalPeriod;
         budget.startDate = Objects.requireNonNull(startDate, "Start date must not be null");
-        budget.budgetMoney = Objects.requireNonNull(budgetMoney, "Budget money must not be null");
+
+        Money checkMoney = Objects.requireNonNull(budgetMoney, "budgetMoney cannot be null");
+        if (checkMoney.getCurrencyCode() == null) throw new IllegalArgumentException("budgetMoney currency cannot be null");
+        if (checkMoney.getAmount() == null) throw new IllegalArgumentException("budgetMoney amount cannot be null");
+        if (checkMoney.getAmount().signum() < 0) throw new IllegalArgumentException("budget cannot be negative");
+        budget.budgetMoney = checkMoney;
+
         budget.enableRollover = enableRollover;
         budget.budgetCategory = Objects.requireNonNull(budgetCategory, "Budget category must not be null");
         return budget;
