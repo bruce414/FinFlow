@@ -55,14 +55,16 @@ public class Account extends BaseEntity {
     private String institutionCode;
 
     @Embedded
-    @AttributeOverride(
-            name = "amount",
-            column = @Column(name = "account_balance", nullable = false, precision = 19, scale = 6)
-    )
-    @AssociationOverride(
-            name = "currency",
-            joinColumns = @JoinColumn(name = "currency_code", referencedColumnName = "code", nullable = false)
-    )
+    @AttributeOverrides({
+            @AttributeOverride(
+                    name = "amount",
+                    column = @Column(name = "account_balance", nullable = false, precision = 19, scale = 6)
+            ),
+            @AttributeOverride(
+                    name = "currencyCode",
+                    column = @Column(name = "account_currency_code", nullable = false, length = 3)
+            )
+    })
     private Money accountMoney;
 
     @Column(nullable = false)
@@ -97,7 +99,7 @@ public class Account extends BaseEntity {
         String instCode = requireNotBlank(institutionCode, "institutionCode cannot be blank").trim();
 
         Money money = Objects.requireNonNull(accountMoney, "accountMoney cannot be null");
-        if (money.getCurrency() == null) throw new IllegalArgumentException("accountMoney currency cannot be null");
+        if (money.getCurrencyCode() == null) throw new IllegalArgumentException("accountMoney currency cannot be null");
         if (money.getAmount() == null) throw new IllegalArgumentException("accountMoney amount cannot be null");
         if (money.getAmount().signum() < 0) throw new IllegalArgumentException("opening balance cannot be negative");
 
@@ -184,7 +186,7 @@ public class Account extends BaseEntity {
         if (newMoney == null) {
             throw new IllegalArgumentException("Money cannot be null");
         }
-        if (!newMoney.getCurrency().equals(this.accountMoney.getCurrency())) {
+        if (!newMoney.getCurrencyCode().equals(this.accountMoney.getCurrencyCode())) {
             throw new IllegalArgumentException("Money currency mismatch");
         }
     }

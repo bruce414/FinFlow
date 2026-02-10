@@ -4,6 +4,5 @@ import java.math.BigDecimal;
 
 public record MoneyResponseDto(
     BigDecimal amount,
-    String currencyCode,
-    String currencyName
+    String currencyCode
 ) {}
