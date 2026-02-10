@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.Locale;
 import java.util.Objects;
@@ -35,8 +36,9 @@ public class Money {
         return new Money(normalizedAmount, normalizeCurrencyCode);
     }
 
+    private static final int SCALE = 6;
     private static BigDecimal normalizeAmount(BigDecimal amount) {
-        return amount.setScale(2, BigDecimal.ROUND_HALF_UP);
+        return amount.setScale(SCALE, RoundingMode.HALF_UP);
     }
 
     private static String normalizeCurrencyCode(String currencyCode) {

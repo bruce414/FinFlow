@@ -1,6 +1,8 @@
 package com.finflow.finflowbackend.account.dto;
 
 import com.finflow.finflowbackend.common.dtos.money.MoneyRequestDto;
+import com.finflow.finflowbackend.common.enums.AccountOrigin;
+import com.finflow.finflowbackend.common.enums.AccountType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
@@ -12,11 +14,11 @@ public record AccountCreateDto(
     @Size(min = 1, max = 30)
     String providerAccountName,
 
-    @NotBlank
-    String accountType,
+    @NotNull
+    AccountType accountType,
 
-    @NotBlank
-    String accountOrigin,
+    @NotNull
+    AccountOrigin accountOrigin,
 
     @Size(min = 4, max = 4)
     @Pattern(regexp = "^\\d{4}$")

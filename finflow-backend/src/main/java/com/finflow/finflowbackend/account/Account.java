@@ -77,6 +77,7 @@ public class Account extends BaseEntity {
             return;
         }
         this.active = false;
+        this.closedAt = Instant.now();
     }
 
     public static Account createAccount(
