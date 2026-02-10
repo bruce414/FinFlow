@@ -44,7 +44,7 @@ CREATE TABLE accounts (
     institution_name VARCHAR(255) NOT NULL,
     institution_code VARCHAR(40) NOT NULL,
     account_balance DECIMAL(19, 6) NOT NULL DEFAULT 0,
-    currency_code VARCHAR(10) NOT NULL,
+    account_currency_code VARCHAR(10) NOT NULL,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     closed_at TIMESTAMPTZ,
 
@@ -55,7 +55,7 @@ CREATE TABLE accounts (
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
 
     CONSTRAINT fk_account_currency
-        FOREIGN KEY (currency_code) REFERENCES currencies(code)
+        FOREIGN KEY (account_currency_code) REFERENCES currencies(code)
 );
 
 CREATE TABLE categories (

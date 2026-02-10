@@ -9,7 +9,5 @@ import org.mapstruct.Mapping;
 public interface MoneyResponseMapper {
 
     //Money -> MoneyResponseDto
-    @Mapping(source = "currency.code", target = "currencyCode")
-    @Mapping(source = "currency.name", target = "currencyName")
     MoneyResponseDto toMoneyResponseDto(Money money);
 }
