@@ -2,6 +2,7 @@ package com.finflow.finflowbackend.transaction;
 
 import com.finflow.finflowbackend.transaction.dto.TransactionCreateDto;
 import com.finflow.finflowbackend.transaction.dto.TransactionDetailsOutDto;
+import com.finflow.finflowbackend.transaction.dto.TransactionSummaryResponseDto;
 import com.finflow.finflowbackend.transaction.service.TransactionService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -33,8 +34,8 @@ public class TransactionController {
             @PathVariable @NotNull UUID accountId,
             @RequestBody @Valid TransactionCreateDto transactionCreateDto) {
 
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        TransactionDetailsOutDto transactionDetailsOutDto = transactionService.createManualTransaction(userId, accountId, transactionCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(transactionDetailsOutDto);
     }
 
     /*
@@ -46,19 +47,17 @@ public class TransactionController {
             @PathVariable @NotNull UUID accountId,
             @PathVariable @NotNull UUID transactionId) {
 
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(transactionService.getTransactionById(userId, accountId, transactionId));
     }
 
     /*
      * Endpoint: Get all transactions
      */
     @GetMapping
-    public ResponseEntity<List<TransactionDetailsOutDto>> getAllTransactions(
+    public ResponseEntity<List<TransactionSummaryResponseDto>> getAllTransactions(
             @PathVariable @NotNull UUID userId,
             @PathVariable @NotNull UUID accountId) {
 
-        //Complete the body to replace this
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(transactionService.getAllTransactions(userId, accountId));
     }
 }

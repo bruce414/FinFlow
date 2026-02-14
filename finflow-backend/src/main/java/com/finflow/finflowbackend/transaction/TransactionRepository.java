@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
     //Find all transactions belong to an account
-    List<Transaction> findAllByAccount_AccountIdOrderByPostedDateDesc(UUID accountId);
+    List<Transaction> findAllByAccount_IdOrderByPostedDateDesc(UUID accountId);
 }

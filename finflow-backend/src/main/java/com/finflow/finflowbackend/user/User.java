@@ -93,7 +93,8 @@ public class User extends BaseEntity {
         user.dateOfBirth = requirePastDate(dateOfBirth, "Date of Birth");
         user.timeZone = requireNonBlank(timeZone, "Time Zone");
 
-        user.status = UserStatus.PENDING_VERIFICATION;
+        //Temp change this to active for testing
+        user.status = UserStatus.ACTIVE;
         user.lastLoginAt = null;
 
         user.assertInvariants();
