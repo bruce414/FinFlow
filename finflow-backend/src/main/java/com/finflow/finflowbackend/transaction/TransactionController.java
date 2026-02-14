@@ -28,7 +28,7 @@ public class TransactionController {
      * Endpoint: Add a transaction
      */
     @PostMapping
-    public ResponseEntity<TransactionDetailsOutDto> createTransaction(
+    public ResponseEntity<TransactionDetailsOutDto> createManualTransaction(
             @PathVariable @NotNull UUID userId,
             @PathVariable @NotNull UUID accountId,
             @RequestBody @Valid TransactionCreateDto transactionCreateDto) {
@@ -41,7 +41,7 @@ public class TransactionController {
      * Endpoint: Get a transaction by id
      */
     @GetMapping("/{transactionId}")
-    public ResponseEntity<TransactionDetailsOutDto> getTransaction(
+    public ResponseEntity<TransactionDetailsOutDto> getTransactionById(
             @PathVariable @NotNull UUID userId,
             @PathVariable @NotNull UUID accountId,
             @PathVariable @NotNull UUID transactionId) {
@@ -60,15 +60,5 @@ public class TransactionController {
 
         //Complete the body to replace this
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
-    }
-
-    @DeleteMapping("/{transactionId}")
-    public ResponseEntity<Void> deleteTransaction(
-            @PathVariable @NotNull UUID userId,
-            @PathVariable @NotNull UUID accountId,
-            @PathVariable @NotNull UUID transactionId) {
-
-        //Complete the body to replace this
-        return ResponseEntity.noContent().build();
     }
 }
