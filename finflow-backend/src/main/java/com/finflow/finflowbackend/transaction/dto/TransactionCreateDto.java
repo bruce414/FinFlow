@@ -2,6 +2,7 @@ package com.finflow.finflowbackend.transaction.dto;
 
 import com.finflow.finflowbackend.common.dtos.money.MoneyRequestDto;
 import com.finflow.finflowbackend.common.enums.CounterpartyType;
+import com.finflow.finflowbackend.common.enums.TransactionType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
@@ -14,6 +15,9 @@ public record TransactionCreateDto(
 
     @NotNull
     LocalDate postedDate,
+
+    @NotNull
+    TransactionType transactionType,
 
     @Size(max = 255)
     String reference,
