@@ -29,7 +29,7 @@ CREATE TABLE users (
 CREATE TABLE currencies (
     code VARCHAR(3) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    decimal_scale INT NOT NULL CHECK (decimal_scale > 0),
+    decimal_scale SMALLINT NOT NULL CHECK (decimal_scale >= 0 AND decimal_scale <= 6),
     active BOOLEAN NOT NULL DEFAULT TRUE
 );
 

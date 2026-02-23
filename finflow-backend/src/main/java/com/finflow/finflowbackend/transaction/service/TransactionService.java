@@ -91,7 +91,7 @@ public class TransactionService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + accountId));
 
-        List<Transaction> transactions = transactionRepository.findAllByAccount_AccountIdOrderByPostedDateDesc(account.getId());
+        List<Transaction> transactions = transactionRepository.findAllByAccount_IdOrderByPostedDateDesc(account.getId());
         List<TransactionSummaryResponseDto> transactionSummaryResponseDtoList = new ArrayList<>();
         for (Transaction transaction : transactions) {
             transactionSummaryResponseDtoList.add(transactionResponseMapper.toTransactionSummaryResponseDto(transaction));

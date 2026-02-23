@@ -25,12 +25,12 @@ public class Currency {
     private String name;
 
     @Column(nullable = false)
-    private int decimalScale;
+    private short decimalScale;
 
     @Column(nullable = false)
     private boolean active = true;
 
-    public Currency(String code, String name, int decimalScale, boolean active) {
+    public Currency(String code, String name, short decimalScale, boolean active) {
         if (code == null) throw new IllegalArgumentException("code is null");
         String normalizedCode = code.trim().toUpperCase();
         if (normalizedCode.length() != 3) throw new IllegalArgumentException("code length is not 3");
