@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public record TransactionDetailsOutDto(
     UUID accountId,
+    UUID transactionId,
     TransactionOrigin origin,
     TransactionDirection direction,
     TransactionType type,
