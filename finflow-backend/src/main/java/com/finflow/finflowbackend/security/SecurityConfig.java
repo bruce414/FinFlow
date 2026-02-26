@@ -1,4 +1,4 @@
-package com.finflow.finflowbackend.config.security;
+package com.finflow.finflowbackend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,8 @@ public class SecurityConfig {
                     ).permitAll()
                     .anyRequest().authenticated()
             )
-            .httpBasic(Customizer.withDefaults()); // keep if you currently use basic auth
+            .oauth2Login(Customizer.withDefaults())   // <--- enables "Login with Google"
+            .oauth2Client(Customizer.withDefaults());  // <--- allows authorized client usage if needed
 
         return http.build();
     }
