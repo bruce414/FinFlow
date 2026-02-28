@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.oauth2.core.AuthenticationMethod;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -38,11 +39,13 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Setter
     private AuthMethod authMethod;
 
     @Column(length = 100, unique = true, nullable = false)
     private String email;
 
+    @Setter
     @Column(nullable = false)
     private boolean emailVerified;
 
@@ -52,10 +55,13 @@ public class User extends BaseEntity {
     @Column
     private String passwordHash; //this field only makes sense when authModel == "LOCAL"
 
-    @Column(nullable = false)
+    @Column(name = "google_subject", unique = true)
+    private String googleSubject;
+
+    @Column
     private LocalDate dateOfBirth;
 
-    @Column(nullable = false)
+    @Column
     private String timeZone;
 
     @Enumerated(EnumType.STRING)
@@ -99,6 +105,37 @@ public class User extends BaseEntity {
 
         user.assertInvariants();
         return user;
+    }
+
+    public static User createGoogleOAuthUser(
+            String firstName,
+            String lastName,
+            String email,
+            boolean emailVerified,
+            String googleSubject,
+            LocalDate dateOfBirth,
+            String timeZone
+    ) {
+        User user = new User();
+        user.firstName = normalizeName(firstName);
+        user.lastName = normalizeName(lastName);
+        user.authMethod = AuthMethod.GOOGLE;
+        user.email = requireNonBlank(email, "Email").toLowerCase().trim();
+        user.emailVerified = emailVerified;
+        user.googleSubject = requireNonBlank(googleSubject, "Google Subject");
+        user.passwordHash = null;
+        user.phoneNumber = null;
+        user.dateOfBirth = requirePastDate(dateOfBirth, "Date of Birth");
+        user.timeZone = requireNonBlank(timeZone, "Time Zone");
+        user.status = UserStatus.ACTIVE;
+        user.lastLoginAt = Instant.now();
+
+        user.assertInvariants();
+        return user;
+    }
+
+    public void markLoginNow() {
+        this.lastLoginAt = Instant.now();
     }
 
     public void setFirstName(String firstName) {
