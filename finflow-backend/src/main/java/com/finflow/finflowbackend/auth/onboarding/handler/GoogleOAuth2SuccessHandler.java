@@ -1,5 +1,6 @@
-package com.finflow.finflowbackend.auth.onboarding;
+package com.finflow.finflowbackend.auth.onboarding.handler;
 
+import com.finflow.finflowbackend.auth.onboarding.dto.PendingGoogleSignup;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.user.UserRepository;
 import jakarta.servlet.ServletException;

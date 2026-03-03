@@ -1,6 +1,6 @@
 package com.finflow.finflowbackend.auth.service;
 
-import com.finflow.finflowbackend.auth.dtos.RegisterRequest;
+import com.finflow.finflowbackend.auth.dto.RegisterRequest;
 import com.finflow.finflowbackend.common.enums.AuthMethod;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.user.UserRepository;

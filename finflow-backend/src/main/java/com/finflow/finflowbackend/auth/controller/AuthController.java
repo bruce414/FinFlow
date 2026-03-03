@@ -1,8 +1,8 @@
 package com.finflow.finflowbackend.auth.controller;
 
-import com.finflow.finflowbackend.auth.dtos.LoginRequest;
-import com.finflow.finflowbackend.auth.dtos.MeResponse;
-import com.finflow.finflowbackend.auth.dtos.RegisterRequest;
+import com.finflow.finflowbackend.auth.dto.LoginRequest;
+import com.finflow.finflowbackend.auth.dto.MeResponse;
+import com.finflow.finflowbackend.auth.dto.RegisterRequest;
 import com.finflow.finflowbackend.auth.service.AuthService;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.user.UserRepository;

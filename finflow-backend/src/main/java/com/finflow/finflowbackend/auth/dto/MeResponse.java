@@ -1,4 +1,4 @@
-package com.finflow.finflowbackend.auth.dtos;
+package com.finflow.finflowbackend.auth.dto;
 
 import java.util.UUID;
 
