@@ -69,6 +69,10 @@ public class User extends BaseEntity {
     @Setter
     private UserStatus status;
 
+    @Column(nullable = false)
+    @Setter
+    private boolean profileCompleted;
+
     @Column
     private Instant lastLoginAt;
 
@@ -114,7 +118,8 @@ public class User extends BaseEntity {
             boolean emailVerified,
             String googleSubject,
             LocalDate dateOfBirth,
-            String timeZone
+            String timeZone,
+            boolean profileCompleted
     ) {
         User user = new User();
         user.firstName = normalizeName(firstName);
@@ -128,6 +133,7 @@ public class User extends BaseEntity {
         user.dateOfBirth = requirePastDate(dateOfBirth, "Date of Birth");
         user.timeZone = requireNonBlank(timeZone, "Time Zone");
         user.status = UserStatus.ACTIVE;
+        user.profileCompleted = profileCompleted;
         user.lastLoginAt = Instant.now();
 
         user.assertInvariants();
@@ -199,5 +205,9 @@ public class User extends BaseEntity {
     private static String requireNonBlank(String v, String field) {
         if (v == null || v.isBlank()) throw new IllegalArgumentException(field + " must not be blank");
         return v;
+    }
+
+    public boolean isProfileComplete() {
+        return this.isProfileCompleted();
     }
 }

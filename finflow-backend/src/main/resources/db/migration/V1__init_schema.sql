@@ -13,6 +13,7 @@ CREATE TABLE users (
     date_of_birth DATE,
     time_zone VARCHAR(100),
     status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'PENDING_VERIFICATION', 'SUSPENDED', 'DELETED')),
+    profile_completed BOOLEAN NOT NULL DEFAULT FALSE,
     last_login_at TIMESTAMPTZ,
     deactivated_at TIMESTAMPTZ,
 

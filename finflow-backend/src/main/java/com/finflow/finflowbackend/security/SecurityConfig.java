@@ -24,53 +24,84 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, GoogleOidcUserService googleOidcUserService, GoogleOAuth2SuccessHandler googleOAuth2SuccessHandler) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            GoogleOidcUserService googleOidcUserService,
+            GoogleOAuth2SuccessHandler googleOAuth2SuccessHandler
+    ) throws Exception {
+
         http
-            .cors(Customizer.withDefaults())
-            .csrf(
-                    csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            )
-            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/v3/api-docs/**",
-                            "/v3/api-docs.yaml"
-                    ).permitAll()
+                .cors(Customizer.withDefaults())
 
-                    //auth endpoints
-                    .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/auth/logout").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/auth/csrf").permitAll()
+                // SPA-friendly CSRF: cookie readable by JS so frontend can echo it back via X-XSRF-TOKEN
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        // OAuth2 redirect endpoints are GET-based; they don't need CSRF checks.
+                        // Being explicit avoids surprises.
+                        .ignoringRequestMatchers(
+                                "/oauth2/**",
+                                "/login/oauth2/**"
+                        )
+                )
 
-                    //oauth2 endpoints
-                    .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                    .requestMatchers("/auth/onboarding/**").permitAll()
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 
-                    //In case Spring hits error endpoint
-                    .requestMatchers("/error").permitAll()
-                    //Everything else requires session authentication
-                    .anyRequest().authenticated()
-            )
-            .formLogin(f -> f.disable())
-            .httpBasic(b -> b.disable())
+                .authorizeHttpRequests(auth -> auth
+                        // swagger
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml"
+                        ).permitAll()
 
-            //Google login (managed by backend), creation on success
-            .oauth2Login(
-                    oauth -> oauth
+                        // auth endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+
+                        // logout is handled by Spring Security's LogoutFilter at this same URL
+                        // Keep it authenticated (or permitAll if you want idempotent logout).
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
+
+                        // csrf token fetch endpoint
+                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/csrf").permitAll()
+
+                        // oauth2 debug failure endpoint
+                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/oauth2-failure").permitAll()
+
+                        // oauth2 endpoints (authorization start + callback)
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+
+                        // onboarding requires login
+                        .requestMatchers("/api/v1/auth/onboarding/**").authenticated()
+
+                        // error endpoint
+                        .requestMatchers("/error").permitAll()
+
+                        .anyRequest().authenticated()
+                )
+
+                // prevent misleading "invalid credentials" HTML login page
+                .formLogin(f -> f.disable())
+                .httpBasic(b -> b.disable())
+
+                .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo.oidcUserService(googleOidcUserService))
                         .successHandler(googleOAuth2SuccessHandler)
-            )
-            .oauth2Client(Customizer.withDefaults())
+                        .failureHandler((req, res, ex) -> {
+                            ex.printStackTrace();
+                            res.sendRedirect("/api/v1/auth/oauth2-failure?error=" + ex.getClass().getSimpleName());
+                        })
+                )
 
-            //logout will invalidate session and clear cookie
-            .logout(logout -> logout
-                .logoutUrl("/auth/logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "XSRF-TOKEN")
-            );
+                .oauth2Client(Customizer.withDefaults())
+
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/auth/logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID", "XSRF-TOKEN")
+                );
 
         return http.build();
     }
@@ -78,9 +109,31 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5734"));
+
+        // DEV: allow any localhost port (covers 5173, 5734, etc.)
+        // When you deploy, tighten this to your real frontend origin.
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*"
+        ));
+
         config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
-        config.setAllowedHeaders(List.of("Content-Type", "X-XSRF-TOKEN", "X-CSRF-TOKEN", "Accept", "Origin", "X-Requested-With"));
+
+        // Allow common headers + XSRF headers used by SPA
+        config.setAllowedHeaders(List.of(
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With",
+                "Authorization",
+                "X-XSRF-TOKEN",
+                "X-CSRF-TOKEN"
+        ));
+
+        // Expose the CSRF header if you ever return it as a header (optional but useful)
+        config.setExposedHeaders(List.of("X-CSRF-TOKEN"));
+
+        // Important for session cookies
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -93,10 +146,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 
-    // Needed for manual email/password login endpoint to authenticate and create session
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
         return cfg.getAuthenticationManager();
     }
 }
-

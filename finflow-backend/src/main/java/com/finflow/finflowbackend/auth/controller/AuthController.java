@@ -17,6 +17,8 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -89,5 +91,10 @@ public class AuthController {
     @GetMapping("/csrf")
     public CsrfToken csrf(CsrfToken token) {
         return token;
+    }
+
+    @GetMapping("/oauth2-failure")
+    public Map<String, String> oauth2Failure(@RequestParam(required = false) String error) {
+        return Map.of("oauth2Error", error != null ? error : "unknown");
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/auth/onboarding")
 public class OnboardingController {
@@ -30,9 +32,20 @@ public class OnboardingController {
         return new OnboardingStatus(authenticated, pendingGoogleSignup != null);
     }
 
-    @PostMapping("/complete")
+    //Testing only
+//    @GetMapping("/complete-profile")
+//    public Map<String, Object> completeProfile(Authentication auth) {
+//        return Map.of(
+//                "isAuthenticated", auth != null && auth.isAuthenticated(),
+//                "principalType", auth == null ? null : auth.getPrincipal().getClass().getName(),
+//                "name", auth == null ? null : auth.getName(),
+//                "authorities", auth == null ? null : auth.getAuthorities()
+//        );
+//    }
+
+    @PostMapping("/complete-profile")
     @ResponseStatus(HttpStatus.CREATED)
-    public void complete(@RequestBody CompleteAdditionalGoogleProfileRequest request, HttpSession session, Authentication authentication) {
+    public void completeProfile(@RequestBody CompleteAdditionalGoogleProfileRequest request, HttpSession session, Authentication authentication) {
         if (!(authentication != null && authentication.getPrincipal() instanceof OidcUser oidcUser)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated with Google");
         }
@@ -55,8 +68,8 @@ public class OnboardingController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
         }
 
-        String firstName = (pendingGoogleSignup.firstName() != null && pendingGoogleSignup.firstName().isBlank()) ? pendingGoogleSignup.firstName() : "User";
-        String lastName = (pendingGoogleSignup.lastName() != null && pendingGoogleSignup.lastName().isBlank()) ? pendingGoogleSignup.lastName() : " ";
+        String firstName = (pendingGoogleSignup.firstName() != null && !pendingGoogleSignup.firstName().isBlank()) ? pendingGoogleSignup.firstName() : "User";
+        String lastName = (pendingGoogleSignup.lastName() != null && !pendingGoogleSignup.lastName().isBlank()) ? pendingGoogleSignup.lastName() : " ";
 
         User user = User.createGoogleOAuthUser(
                 firstName,
@@ -65,7 +78,8 @@ public class OnboardingController {
                 pendingGoogleSignup.emailVerified(),
                 pendingGoogleSignup.googleSubject(),
                 request.dateOfBirth(),
-                request.timeZone()
+                request.timeZone(),
+                true
         );
         userRepository.save(user);
 
