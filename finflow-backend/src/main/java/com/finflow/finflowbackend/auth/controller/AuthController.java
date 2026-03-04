@@ -6,13 +6,18 @@ import com.finflow.finflowbackend.auth.dto.RegisterRequest;
 import com.finflow.finflowbackend.auth.service.AuthService;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.user.UserRepository;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,11 +30,13 @@ public class AuthController {
 
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
+    private final SecurityContextRepository securityContextRepository;
     private final UserRepository userRepository;
 
-    public AuthController(AuthService authService, AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public AuthController(AuthService authService, AuthenticationManager authenticationManager, SecurityContextRepository securityContextRepository, UserRepository userRepository) {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
+        this.securityContextRepository = securityContextRepository;
         this.userRepository = userRepository;
     }
 
@@ -46,20 +53,19 @@ public class AuthController {
 
     //LOCAL ONLY
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest req) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.email().toLowerCase().trim(), loginRequest.password());
+    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletRequest req, HttpServletResponse resp) {
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password())
+        );
 
-        Authentication authentication;
-        try {
-            authentication = authenticationManager.authenticate(token);
-        } catch (Exception ex) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage());
-        }
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        req.getSession(true); // ensure session exists
+        securityContextRepository.saveContext(context, req, resp);
 
-        HttpSession session = req.getSession(true);
-        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/logout")
@@ -88,9 +94,13 @@ public class AuthController {
         );
     }
 
+    //This CSRF endpoint returns a payload
     @GetMapping("/csrf")
-    public CsrfToken csrf(CsrfToken token) {
-        return token;
+    public Map<String, String> csrf(@Parameter(hidden = true) CsrfToken csrfToken) {
+        return Map.of(
+                "token", csrfToken.getToken(),
+                "headerName", csrfToken.getHeaderName()
+        );
     }
 
     @GetMapping("/oauth2-failure")
