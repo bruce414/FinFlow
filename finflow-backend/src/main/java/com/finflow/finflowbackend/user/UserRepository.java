@@ -14,4 +14,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     //Retrieve all users
     List<User> findAllByStatus(UserStatus status);
+
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByGoogleSubject(String googleSubject);
+
+    boolean existsByEmail(String email);
 }

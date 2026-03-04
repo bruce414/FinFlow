@@ -9,9 +9,11 @@ CREATE TABLE users (
     email_verified BOOLEAN NOT NULL DEFAULT FALSE,
     phone_number VARCHAR(20),
     password_hash VARCHAR(255),
-    date_of_birth DATE NOT NULL,
-    time_zone VARCHAR(100) NOT NULL,
+    google_subject VARCHAR(255) UNIQUE,
+    date_of_birth DATE,
+    time_zone VARCHAR(100),
     status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'PENDING_VERIFICATION', 'SUSPENDED', 'DELETED')),
+    profile_completed BOOLEAN NOT NULL DEFAULT FALSE,
     last_login_at TIMESTAMPTZ,
     deactivated_at TIMESTAMPTZ,
 
