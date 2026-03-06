@@ -12,8 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
 @RestController
@@ -29,19 +27,19 @@ public class MeController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDetailsOutDto> getMe(Authentication authentication) throws AccessDeniedException {
+    public ResponseEntity<UserDetailsOutDto> getMe(Authentication authentication) {
         UUID userId = currentUserService.requireUserId(authentication);
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @PatchMapping
-    public ResponseEntity<UserDetailsOutDto> patchMe(Authentication authentication, @RequestBody @Valid UserPatchDto userPatchDto) throws AccessDeniedException {
+    public ResponseEntity<UserDetailsOutDto> patchMe(Authentication authentication, @RequestBody @Valid UserPatchDto userPatchDto) {
         UUID userId = currentUserService.requireUserId(authentication);
         return ResponseEntity.ok(userService.patchUser(userId, userPatchDto));
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deactiveMe(Authentication authentication) throws AccessDeniedException {
+    public ResponseEntity<Void> deactiveMe(Authentication authentication) {
         UUID userId = currentUserService.requireUserId(authentication);
         userService.deActiveUser(userId);
         return ResponseEntity.noContent().build();

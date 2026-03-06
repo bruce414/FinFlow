@@ -41,7 +41,8 @@ public class AuthService {
             registerRequest.phoneNumber(),
             passwordHash,
             registerRequest.dateOfBirth(),
-            registerRequest.timeZone()
+            registerRequest.timeZone(),
+            registerRequest.baseCurrencyCode()
         );
         userRepository.save(user);
     }

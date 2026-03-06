@@ -79,6 +79,7 @@ public class OnboardingController {
                 pendingGoogleSignup.googleSubject(),
                 request.dateOfBirth(),
                 request.timeZone(),
+                request.baseCurrencyCode(),
                 true
         );
         userRepository.save(user);

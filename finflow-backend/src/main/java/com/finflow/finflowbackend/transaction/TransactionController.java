@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +38,7 @@ public class TransactionController {
     public ResponseEntity<TransactionDetailsOutDto> createManualTransaction(
             Authentication authentication,
             @PathVariable @NotNull UUID accountId,
-            @RequestBody @Valid TransactionCreateDto transactionCreateDto) throws AccessDeniedException {
+            @RequestBody @Valid TransactionCreateDto transactionCreateDto) {
 
         UUID userId = currentUserService.requireUserId(authentication);
         TransactionDetailsOutDto transactionDetailsOutDto = transactionService.createManualTransaction(userId, accountId, transactionCreateDto);
@@ -54,7 +52,7 @@ public class TransactionController {
     public ResponseEntity<TransactionDetailsOutDto> getTransactionById(
             Authentication authentication,
             @PathVariable @NotNull UUID accountId,
-            @PathVariable @NotNull UUID transactionId) throws AccessDeniedException {
+            @PathVariable @NotNull UUID transactionId) {
 
         UUID userId = currentUserService.requireUserId(authentication);
         return ResponseEntity.ok(transactionService.getTransactionById(userId, accountId, transactionId));
@@ -66,7 +64,7 @@ public class TransactionController {
     @GetMapping
     public ResponseEntity<List<TransactionSummaryResponseDto>> getAllTransactions(
             Authentication authentication,
-            @PathVariable @NotNull UUID accountId) throws AccessDeniedException {
+            @PathVariable @NotNull UUID accountId) {
 
         UUID userId = currentUserService.requireUserId(authentication);
         return ResponseEntity.ok(transactionService.getAllTransactions(userId, accountId));

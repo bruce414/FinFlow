@@ -28,11 +28,11 @@ public class UserController {
     /*
      * Endpoint: Create a user object
      */
-    @PostMapping
-    public ResponseEntity<UserDetailsOutDto> createLocalUser(@RequestBody @Valid LocalUserCreateDto localUserCreateDto) {
-        UserDetailsOutDto createdUser = userService.createLocalUser(localUserCreateDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    }
+//    @PostMapping
+//    public ResponseEntity<UserDetailsOutDto> createLocalUser(@RequestBody @Valid LocalUserCreateDto localUserCreateDto) {
+//        UserDetailsOutDto createdUser = userService.createLocalUser(localUserCreateDto);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+//    }
 
     /*
      * Endpoint: Get user by id

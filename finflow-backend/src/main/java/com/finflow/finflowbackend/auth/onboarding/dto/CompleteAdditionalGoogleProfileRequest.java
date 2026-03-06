@@ -4,5 +4,6 @@ import java.time.LocalDate;
 
 public record CompleteAdditionalGoogleProfileRequest(
        LocalDate dateOfBirth,
-       String timeZone
+       String timeZone,
+       String baseCurrencyCode
 ) {}

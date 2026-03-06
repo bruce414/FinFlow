@@ -6,8 +6,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(
         name = "currencies"

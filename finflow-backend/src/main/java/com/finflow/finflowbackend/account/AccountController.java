@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +40,7 @@ public class AccountController {
                     description = "CSRF token from GET /api/v1/auth/csrf (token field)")
             @RequestHeader("X-XSRF-TOKEN") String csrfToken,
             Authentication authentication,
-            @RequestBody @Valid AccountCreateDto accountCreateDto) throws AccessDeniedException {
+            @RequestBody @Valid AccountCreateDto accountCreateDto) {
 
         UUID userId = currentUserService.requireUserId(authentication);
         AccountDetailsOutDto createdAccount = accountService.createAccount(userId, accountCreateDto);
@@ -55,7 +53,7 @@ public class AccountController {
     @GetMapping("/{accountId}")
     public ResponseEntity<AccountDetailsOutDto> getAccountById(
             Authentication authentication,
-            @PathVariable @NotNull UUID accountId) throws AccessDeniedException {
+            @PathVariable @NotNull UUID accountId) {
 
         UUID userId = currentUserService.requireUserId(authentication);
         return ResponseEntity.ok(accountService.getAccountById(userId, accountId));
@@ -65,7 +63,7 @@ public class AccountController {
      * Endpoint: List all account by userId
      */
     @GetMapping
-    public ResponseEntity<List<AccountSummaryResponseDto>> getAllAccountsByUserId(Authentication authentication) throws AccessDeniedException {
+    public ResponseEntity<List<AccountSummaryResponseDto>> getAllAccountsByUserId(Authentication authentication) {
 
         UUID userId = currentUserService.requireUserId(authentication);
         return ResponseEntity.ok(accountService.getAllAccountsByUserId(userId));
@@ -79,7 +77,7 @@ public class AccountController {
             Authentication authentication,
             @PathVariable @NotNull UUID accountId,
             @RequestBody @Valid AccountRenameDto accountRenameDto
-    ) throws AccessDeniedException {
+    ) {
         UUID userId = currentUserService.requireUserId(authentication);
         return ResponseEntity.ok(accountService.changeAccountNameById(userId, accountId, accountRenameDto));
     }
@@ -90,7 +88,7 @@ public class AccountController {
     @DeleteMapping("/{accountId}")
     public ResponseEntity<Void> deleteAccountById(
             Authentication authentication,
-            @PathVariable UUID accountId) throws AccessDeniedException {
+            @PathVariable UUID accountId) {
 
         UUID userId = currentUserService.requireUserId(authentication);
         accountService.deactiveAccount(userId, accountId);

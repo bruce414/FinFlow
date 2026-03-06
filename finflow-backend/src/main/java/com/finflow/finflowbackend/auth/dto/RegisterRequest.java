@@ -32,5 +32,9 @@ public record RegisterRequest(
 
         @NotBlank
         @Size(max = 100)
-        String timeZone
+        String timeZone,
+
+        @NotBlank
+        @Size(max = 3)
+        String baseCurrencyCode
 ) {}
