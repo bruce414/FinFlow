@@ -12,6 +12,7 @@ CREATE TABLE users (
     google_subject VARCHAR(255) UNIQUE,
     date_of_birth DATE,
     time_zone VARCHAR(100),
+    base_currency_code VARCHAR(3) NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'PENDING_VERIFICATION', 'SUSPENDED', 'DELETED')),
     profile_completed BOOLEAN NOT NULL DEFAULT FALSE,
     last_login_at TIMESTAMPTZ,

@@ -32,21 +32,22 @@ public class UserService {
         this.userPatchApplier = userPatchApplier;
     }
 
-    public UserDetailsOutDto createLocalUser(LocalUserCreateDto localUserCreateDto) {
-        User user = User.createLocalUser(
-                localUserCreateDto.firstName(),
-                localUserCreateDto.lastName(),
-                AuthMethod.LOCAL,
-                localUserCreateDto.email(),
-                localUserCreateDto.phoneNumber(),
-                localUserCreateDto.password(),
-                localUserCreateDto.dateOfBirth(),
-                localUserCreateDto.timeZone()
-        );
-
-        User savedUser = userRepository.save(user);
-        return userResponseMapper.userToUserDetailsOutDto(savedUser);
-    }
+    //This method has been deprecated
+//    public UserDetailsOutDto createLocalUser(LocalUserCreateDto localUserCreateDto) {
+//        User user = User.createLocalUser(
+//                localUserCreateDto.firstName(),
+//                localUserCreateDto.lastName(),
+//                AuthMethod.LOCAL,
+//                localUserCreateDto.email(),
+//                localUserCreateDto.phoneNumber(),
+//                localUserCreateDto.password(),
+//                localUserCreateDto.dateOfBirth(),
+//                localUserCreateDto.timeZone()
+//        );
+//
+//        User savedUser = userRepository.save(user);
+//        return userResponseMapper.userToUserDetailsOutDto(savedUser);
+//    }
 
     public UserDetailsOutDto getUserById(UUID userId) {
         User user =  userRepository.findByUserIdAndStatus(userId, UserStatus.ACTIVE)

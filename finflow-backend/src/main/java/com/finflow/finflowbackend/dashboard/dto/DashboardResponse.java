@@ -7,6 +7,9 @@ public record DashboardResponse(
         Instant asOf,
         String currency,
         DashboardTotalBalance totalBalance,
+        DashboardMonthlySpending monthlySpending,
+        DashboardIncome monthlyIncome,
+        List<DashboardSpendingByCategoryItem> spendingByCategory,
         List<DashboardAccountItem> accounts,
         List<DashboardTransactionItem> recentTransactions
 ) {}

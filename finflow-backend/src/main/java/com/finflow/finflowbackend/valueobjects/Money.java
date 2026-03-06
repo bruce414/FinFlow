@@ -51,7 +51,7 @@ public class Money {
      * For money amount is ZERO 0
      */
     public static Money zero(String currencyCode) {
-        return new Money(BigDecimal.ZERO, currencyCode);
+        return Money.of(BigDecimal.ZERO, currencyCode);
     }
 
     public Money add(Money otherMoney) {

@@ -7,8 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
-
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.UUID;
 
 @Service
@@ -20,7 +19,7 @@ public class CurrentUserService {
         this.userRepository = userRepository;
     }
 
-    public UUID requireUserId(Authentication auth) throws AccessDeniedException {
+    public UUID requireUserId(Authentication auth) {
         if (auth == null || !auth.isAuthenticated()) {
             throw new AccessDeniedException("Not authenticated");
         }
@@ -38,6 +37,14 @@ public class CurrentUserService {
         // Local login session (if you use UserDetails)
         if (principal instanceof UserDetails ud) {
             User user = userRepository.findByEmail(ud.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found for email"));
+            return user.getUserId();
+        }
+
+        // Fallback: some providers store principal as String
+        if (principal instanceof String s) {
+            String email = s.toLowerCase().trim();
+            User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found for email"));
             return user.getUserId();
         }

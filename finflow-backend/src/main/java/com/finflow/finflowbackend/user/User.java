@@ -64,6 +64,10 @@ public class User extends BaseEntity {
     @Column
     private String timeZone;
 
+    @Column(nullable = false)
+    @Setter
+    private String baseCurrencyCode;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Setter
@@ -91,7 +95,8 @@ public class User extends BaseEntity {
             String phoneNumber,
             String passwordHash,
             LocalDate dateOfBirth,
-            String timeZone
+            String timeZone,
+            String baseCurrencyCode
     ) {
         User user = new User();
         user.firstName = normalizeName(firstName);
@@ -102,6 +107,7 @@ public class User extends BaseEntity {
         user.passwordHash = requireNonBlank(passwordHash, "Password Hash");
         user.dateOfBirth = requirePastDate(dateOfBirth, "Date of Birth");
         user.timeZone = requireNonBlank(timeZone, "Time Zone");
+        user.baseCurrencyCode = requireNonBlank(baseCurrencyCode, "Base Currency Code");
 
         //Temp change this to active for testing
         user.status = UserStatus.ACTIVE;
@@ -119,6 +125,7 @@ public class User extends BaseEntity {
             String googleSubject,
             LocalDate dateOfBirth,
             String timeZone,
+            String baseCurrencyCode,
             boolean profileCompleted
     ) {
         User user = new User();
@@ -132,6 +139,7 @@ public class User extends BaseEntity {
         user.phoneNumber = null;
         user.dateOfBirth = requirePastDate(dateOfBirth, "Date of Birth");
         user.timeZone = requireNonBlank(timeZone, "Time Zone");
+        user.baseCurrencyCode = null;
         user.status = UserStatus.ACTIVE;
         user.profileCompleted = profileCompleted;
         user.lastLoginAt = Instant.now();
