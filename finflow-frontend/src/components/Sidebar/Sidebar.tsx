@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 const NAV_ITEMS = [
   { id: 'dashboard', icon: DashboardIcon },
   { id: 'transactions', icon: TransactionsIcon },
@@ -70,9 +68,13 @@ function HelpIcon({ className }: { className?: string }) {
   )
 }
 
-export function Sidebar() {
-  const [activeId, setActiveId] = useState<string>('dashboard')
-
+export function Sidebar({
+  activeId,
+  onActiveIdChange,
+}: {
+  activeId: string
+  onActiveIdChange: (id: string) => void
+}) {
   return (
     <aside className="flex h-screen w-16 shrink-0 flex-col bg-black">
       <div className="px-3 pt-5">
@@ -87,7 +89,7 @@ export function Sidebar() {
           <button
             key={id}
             type="button"
-            onClick={() => setActiveId(id)}
+            onClick={() => onActiveIdChange(id)}
             className={`flex h-11 w-full items-center justify-center rounded-lg font-[inherit] transition-[background-color,color] duration-200 ${
               activeId === id
                 ? 'bg-linear-to-br from-blue-500 to-purple-600 text-white'
@@ -99,10 +101,19 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-white/10 px-2 pb-6 pt-4">
+      {/* Bottom navigation */}
+      <div className="flex flex-col gap-1 border-t border-white/10 px-2 pb-6 pt-4">
         <button
           type="button"
           className="flex h-11 w-full items-center justify-center rounded-lg bg-transparent text-gray-400 font-[inherit] transition-[background-color,color] duration-200 hover:bg-white/10 hover:text-gray-200"
+          aria-label="Settings"
+        >
+          <i className="fa-solid fa-gear shrink-0 text-lg" aria-hidden />
+        </button>
+        <button
+          type="button"
+          className="flex h-11 w-full items-center justify-center rounded-lg bg-transparent text-gray-400 font-[inherit] transition-[background-color,color] duration-200 hover:bg-white/10 hover:text-gray-200"
+          aria-label="Help"
         >
           <HelpIcon className="shrink-0" />
         </button>
