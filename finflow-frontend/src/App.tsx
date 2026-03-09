@@ -1,11 +1,14 @@
 import { useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { TopBar } from './components/TopBar/TopBar'
 import { DashboardContent } from './pages/DashboardContent'
 import { AccountsTransactionsContent } from './pages/AccountsTransactionsContent'
 import { TransactionListContent } from './pages/TransactionListContent'
+import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
 
-function App() {
+function MainApp() {
   const [activeNavId, setActiveNavId] = useState<string>('dashboard')
   const [transactionsView, setTransactionsView] = useState<'accounts' | 'list'>('accounts')
   const [transactionListCardIndex, setTransactionListCardIndex] = useState(0)
@@ -38,6 +41,19 @@ function App() {
         </div>
       </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/app" element={<MainApp />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
