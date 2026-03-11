@@ -1,33 +1,36 @@
 import { useState, useEffect } from 'react'
-import { MOCK_CARDS } from '../components/Dashboard/RollingCardPanel'
+import { useNavigate } from 'react-router-dom'
+import { getTransactions } from '../api/transactionApi'
+import { getAccountById } from '../api/accountApi'
 
 const ITEMS_PER_PAGE = 10
 
-const MOCK_TRANSACTIONS = [
-  { id: '1', title: 'Coffee House', postedDate: 'Mar 5, 2025', amount: -4.85, paidFor: 'Personal' },
-  { id: '2', title: 'Grocery Store', postedDate: 'Mar 4, 2025', amount: -127.32, paidFor: 'Household' },
-  { id: '3', title: 'Salary Deposit', postedDate: 'Mar 1, 2025', amount: 3200.0, paidFor: 'Income' },
-  { id: '4', title: 'Netflix', postedDate: 'Feb 28, 2025', amount: -15.99, paidFor: 'Subscriptions' },
-  { id: '5', title: 'Gas Station', postedDate: 'Feb 27, 2025', amount: -52.4, paidFor: 'Transport' },
-  { id: '6', title: 'Restaurant', postedDate: 'Feb 25, 2025', amount: -68.5, paidFor: 'Personal' },
-  { id: '7', title: 'Amazon', postedDate: 'Feb 24, 2025', amount: -89.0, paidFor: 'Shopping' },
-  { id: '8', title: 'Utility Bill', postedDate: 'Feb 22, 2025', amount: -134.5, paidFor: 'Household' },
-]
-
 export function TransactionListContent({
-  cardIndex,
+  accountId,
   onBack,
 }: {
-  cardIndex: number
+  accountId: string
   onBack: () => void
 }) {
+  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [page, setPage] = useState(1)
+  const [transactions, setTransactions] = useState<Array<{ direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>>([])
+  const [accountLabel, setAccountLabel] = useState('Account')
+  const [loading, setLoading] = useState(true)
 
-  const filteredTransactions = MOCK_TRANSACTIONS.filter(
+  useEffect(() => {
+    Promise.all([
+      getAccountById(accountId).then((a) => setAccountLabel(a.accountDisplayName)).catch(() => {}),
+      getTransactions(accountId).then((data: unknown[]) => {
+        setTransactions((data as Array<{ direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>).slice())
+      }).catch(() => setTransactions([])),
+    ]).finally(() => setLoading(false))
+  }, [accountId])
+
+  const filteredTransactions = transactions.filter(
     (t) =>
-      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.paidFor.toLowerCase().includes(searchQuery.toLowerCase())
+      t.counterpartyName?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE))
@@ -41,7 +44,23 @@ export function TransactionListContent({
   const goPrev = () => setPage((p) => Math.max(1, p - 1))
   const goNext = () => setPage((p) => Math.min(totalPages, p + 1))
 
-  const accountLabel = MOCK_CARDS[cardIndex]?.label ?? 'Account'
+  const formatAmount = (tx: { direction: string; moneyResponse: { amount: number; currencyCode: string } }) => {
+    const amt = tx.moneyResponse?.amount ?? 0
+    const code = tx.moneyResponse?.currencyCode ?? 'USD'
+    const sign = amt >= 0 ? '+' : ''
+    return `${sign}${new Intl.NumberFormat('en-US', { style: 'currency', currency: code }).format(amt)}`
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden px-5 pt-2 pb-2">
+        <button type="button" onClick={onBack} className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900">
+          <i className="fa-solid fa-arrow-left" aria-hidden /> Back
+        </button>
+        <p className="text-gray-500">Loading…</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden px-5 pt-2 pb-2">
@@ -57,11 +76,20 @@ export function TransactionListContent({
         </button>
       </div>
 
-      <h1 className="shrink-0 text-2xl font-bold text-gray-900">
-        Transactions — {accountLabel}
-      </h1>
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Transactions — {accountLabel}
+        </h1>
+        <button
+          type="button"
+          onClick={() => navigate(`/app/transactions/accounts/${accountId}/create-transaction`)}
+          className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+        >
+          <i className="fa-solid fa-plus" aria-hidden />
+          Add transaction
+        </button>
+      </div>
 
-      {/* Search bar — separate, with margin at bottom */}
       <div className="mb-2 shrink-0 rounded-xl bg-white px-4 py-3 shadow-sm">
         <input
           type="search"
@@ -73,36 +101,48 @@ export function TransactionListContent({
         />
       </div>
 
-      {/* Transaction list — fixed to viewport, scrollable list with clear space above pagination */}
       <div className="flex min-h-0 flex-1 flex-col rounded-xl bg-white shadow-sm">
         <div className="min-h-0 flex-1 overflow-y-auto">
           <ul className="divide-y divide-gray-100 pb-6 sm:pb-8 md:pb-10">
-            {pageTransactions.map((tx) => (
-              <li
-                key={tx.id}
-                className="flex flex-row flex-wrap items-center justify-between gap-4 px-4 py-4"
-              >
-                <div className="flex flex-col gap-0.5">
-                  <span className="font-medium text-gray-900">{tx.title}</span>
-                  <span className="text-sm text-gray-500">{tx.postedDate}</span>
-                </div>
-                <div className="flex flex-col items-end gap-0.5">
-                  <span
-                    className={`font-semibold ${
-                      tx.amount >= 0 ? 'text-emerald-600' : 'text-gray-900'
-                    }`}
-                  >
-                    {tx.amount >= 0 ? '+' : ''}
-                    ${Math.abs(tx.amount).toFixed(2)}
-                  </span>
-                  <span className="text-sm text-gray-500">{tx.paidFor}</span>
-                </div>
+            {pageTransactions.length === 0 ? (
+              <li className="flex flex-col items-center justify-center gap-4 px-4 py-12">
+                <p className="text-center text-sm text-gray-500">
+                  No transactions yet.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/app/transactions/accounts/${accountId}/create-transaction`)}
+                  className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+                >
+                  <i className="fa-solid fa-plus" aria-hidden />
+                  Add transaction
+                </button>
               </li>
-            ))}
+            ) : (
+              pageTransactions.map((tx, i) => (
+                <li
+                  key={`${tx.counterpartyName}-${i}`}
+                  className="flex flex-row flex-wrap items-center justify-between gap-4 px-4 py-4"
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-medium text-gray-900">{tx.counterpartyName ?? '—'}</span>
+                    <span className="text-sm text-gray-500">{tx.direction}</span>
+                  </div>
+                  <div className="flex flex-col items-end gap-0.5">
+                    <span
+                      className={`font-semibold ${
+                        (tx.moneyResponse?.amount ?? 0) >= 0 ? 'text-emerald-600' : 'text-gray-900'
+                      }`}
+                    >
+                      {formatAmount(tx)}
+                    </span>
+                  </div>
+                </li>
+              ))
+            )}
           </ul>
         </div>
 
-        {/* Pagination — always fully visible below list with gap */}
         <div className="flex shrink-0 items-center justify-between border-t border-gray-100 px-4 py-3 sm:py-4 md:py-4">
           <p className="text-sm text-gray-500">
             Page {page} of {totalPages}

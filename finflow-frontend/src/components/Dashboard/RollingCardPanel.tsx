@@ -17,6 +17,16 @@ export const MOCK_CARDS = [
   { last4: '1209', label: 'Savings goal', balance: '$5,670' },
 ]
 
+export type CardItem = { last4: string; label: string; balance: string }
+
+function formatBalance(money: { amount: number; currencyCode: string }): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: money.currencyCode || 'USD',
+    minimumFractionDigits: 2,
+  }).format(money.amount)
+}
+
 export function CreditCard({
   last4,
   label,
@@ -102,19 +112,43 @@ function getStackStyle(offset: number) {
   }
 }
 
-export function CardStackView({ selectedIndex }: { selectedIndex: number }) {
+export interface AccountSummaryCard {
+  accountId: string
+  accountDisplayName: string
+  accountNumberLast4?: string
+  money: { amount: number; currencyCode: string }
+}
+
+export function CardStackView({
+  selectedIndex,
+  accounts,
+}: {
+  selectedIndex: number
+  accounts?: AccountSummaryCard[] | null
+}) {
+  const cards: CardItem[] =
+    accounts && accounts.length > 0
+      ? accounts.map((a) => ({
+          last4: a.accountNumberLast4 ?? '****',
+          label: a.accountDisplayName,
+          balance: formatBalance(a.money),
+        }))
+      : MOCK_CARDS
+  const count = cards.length
+  const safeIndex = Math.min(selectedIndex, count - 1)
+
   return (
     <div
       className="relative overflow-hidden rounded-xl"
       style={{ height: STACK_HEIGHT, width: CARD_WIDTH }}
     >
-      {[0, 1, 2, 3].map((cardIndex) => {
-        const offset = (cardIndex - selectedIndex + 4) % 4
-        const normalizedOffset = offset > 2 ? offset - 4 : offset
+      {cards.map((card, cardIndex) => {
+        const offset = (cardIndex - safeIndex + count * 2) % count
+        const normalizedOffset = offset > count / 2 ? offset - count : offset
         const style = getStackStyle(normalizedOffset)
         return (
           <div
-            key={cardIndex}
+            key={accounts ? accounts[cardIndex]?.accountId ?? cardIndex : cardIndex}
             style={{
               position: style.position,
               left: style.left,
@@ -128,10 +162,10 @@ export function CardStackView({ selectedIndex }: { selectedIndex: number }) {
             className="origin-center"
           >
             <CreditCard
-              last4={MOCK_CARDS[cardIndex].last4}
-              label={MOCK_CARDS[cardIndex].label}
-              balance={MOCK_CARDS[cardIndex].balance}
-              gradient={CARD_GRADIENTS[cardIndex]}
+              last4={card.last4}
+              label={card.label}
+              balance={card.balance}
+              gradient={CARD_GRADIENTS[cardIndex % CARD_GRADIENTS.length]}
             />
           </div>
         )
@@ -143,18 +177,23 @@ export function CardStackView({ selectedIndex }: { selectedIndex: number }) {
 export function CardNavButtons({
   selectedIndex,
   onSelectIndex,
+  totalCount = 4,
 }: {
   selectedIndex: number
   onSelectIndex: (index: number) => void
+  totalCount?: number
 }) {
-  const goUp = () => onSelectIndex((selectedIndex - 1 + 4) % 4)
-  const goDown = () => onSelectIndex((selectedIndex + 1) % 4)
+  const canGoUp = totalCount > 1 && selectedIndex > 0
+  const canGoDown = totalCount > 1 && selectedIndex < totalCount - 1
+  const goUp = () => onSelectIndex(Math.max(0, selectedIndex - 1))
+  const goDown = () => onSelectIndex(Math.min(totalCount - 1, selectedIndex + 1))
   return (
     <div className="flex flex-col gap-2">
       <button
         type="button"
         onClick={goUp}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-gray-700 shadow-md transition hover:bg-gray-50 hover:shadow-lg"
+        disabled={!canGoUp}
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-gray-700 shadow-md transition hover:bg-gray-50 hover:shadow-lg disabled:pointer-events-none disabled:opacity-50"
         aria-label="Previous card"
       >
         <i className="fa-solid fa-chevron-up text-sm" aria-hidden />
@@ -162,7 +201,8 @@ export function CardNavButtons({
       <button
         type="button"
         onClick={goDown}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-gray-700 shadow-md transition hover:bg-gray-50 hover:shadow-lg"
+        disabled={!canGoDown}
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-gray-700 shadow-md transition hover:bg-gray-50 hover:shadow-lg disabled:pointer-events-none disabled:opacity-50"
         aria-label="Next card"
       >
         <i className="fa-solid fa-chevron-down text-sm" aria-hidden />
@@ -174,16 +214,21 @@ export function CardNavButtons({
 export function RollingCardPanel({
   selectedIndex,
   onSelectIndex,
+  accounts,
 }: {
   selectedIndex: number
   onSelectIndex: (index: number) => void
+  accounts?: AccountSummaryCard[] | null
 }) {
+  const count = accounts && accounts.length > 0 ? accounts.length : 4
+  const safeIndex = Math.min(selectedIndex, count - 1)
   return (
     <div className="flex shrink-0 items-center gap-3">
-      <CardStackView selectedIndex={selectedIndex} />
+      <CardStackView selectedIndex={safeIndex} accounts={accounts} />
       <CardNavButtons
-        selectedIndex={selectedIndex}
+        selectedIndex={safeIndex}
         onSelectIndex={onSelectIndex}
+        totalCount={count}
       />
     </div>
   )
