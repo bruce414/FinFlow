@@ -48,6 +48,26 @@ public class AccountController {
     }
 
     /*
+     * Endpoint: List all active accounts by userId
+     */
+    @GetMapping
+    public ResponseEntity<List<AccountSummaryResponseDto>> getAllAccountsByUserId(Authentication authentication) {
+
+        UUID userId = currentUserService.requireUserId(authentication);
+        return ResponseEntity.ok(accountService.getAllAccountsByUserId(userId));
+    }
+
+    /*
+     * Endpoint: List archived (deactivated) accounts by userId. Must be declared before /{accountId}.
+     */
+    @GetMapping("/archived")
+    public ResponseEntity<List<AccountSummaryResponseDto>> getArchivedAccounts(Authentication authentication) {
+
+        UUID userId = currentUserService.requireUserId(authentication);
+        return ResponseEntity.ok(accountService.getArchivedAccountsByUserId(userId));
+    }
+
+    /*
      * Endpoint: Get the account by id
      */
     @GetMapping("/{accountId}")
@@ -57,16 +77,6 @@ public class AccountController {
 
         UUID userId = currentUserService.requireUserId(authentication);
         return ResponseEntity.ok(accountService.getAccountById(userId, accountId));
-    }
-
-    /*
-     * Endpoint: List all account by userId
-     */
-    @GetMapping
-    public ResponseEntity<List<AccountSummaryResponseDto>> getAllAccountsByUserId(Authentication authentication) {
-
-        UUID userId = currentUserService.requireUserId(authentication);
-        return ResponseEntity.ok(accountService.getAllAccountsByUserId(userId));
     }
 
     /*

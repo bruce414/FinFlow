@@ -68,6 +68,15 @@ public class TransactionService {
         );
 
         Transaction savedTransaction = transactionRepository.save(transaction);
+
+        if (transactionDirection == TransactionDirection.IN) {
+            account.credit(Money.of(money.getAmount().abs(), money.getCurrencyCode()));
+            accountRepository.saveAndFlush(account);
+        } else if (transactionDirection == TransactionDirection.OUT) {
+            account.debit(Money.of(money.getAmount().abs(), money.getCurrencyCode()));
+            accountRepository.saveAndFlush(account);
+        }
+
         return transactionResponseMapper.toTransactionDetailsOutDto(savedTransaction);
     }
 
