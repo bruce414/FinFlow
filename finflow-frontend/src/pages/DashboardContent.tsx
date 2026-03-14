@@ -52,6 +52,14 @@ function getDateRange(period: ChartPeriod): { start: Date; end: Date } {
   return { start, end }
 }
 
+/** Format a Date as local YYYY-MM-DD so chart buckets match API postedDate (calendar date). */
+function toLocalDateKey(date: Date): string {
+  const y = date.getFullYear()
+  const m = date.getMonth() + 1
+  const d = date.getDate()
+  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+
 function buildChartDataFromTransactions(
   transactions: DashboardTransactionItem[],
   period: ChartPeriod
@@ -72,7 +80,7 @@ function buildChartDataFromTransactions(
 
   const byDate = new Map<string, { income: number; expenses: number }>()
   for (const { date } of dayLabels) {
-    const key = date.toISOString().slice(0, 10)
+    const key = toLocalDateKey(date)
     byDate.set(key, { income: 0, expenses: 0 })
   }
   for (const t of transactions) {
@@ -90,7 +98,7 @@ function buildChartDataFromTransactions(
   }
 
   return dayLabels.map(({ date, label, fullDate }) => {
-    const key = date.toISOString().slice(0, 10)
+    const key = toLocalDateKey(date)
     const entry = byDate.get(key) ?? { income: 0, expenses: 0 }
     return {
       day: period === '1d' ? label : `${label} ${date.getDate()}`,

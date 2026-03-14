@@ -15,7 +15,7 @@ export function TransactionListContent({
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [page, setPage] = useState(1)
-  const [transactions, setTransactions] = useState<Array<{ direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>>([])
+  const [transactions, setTransactions] = useState<Array<{ postedDate: string; direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>>([])
   const [accountLabel, setAccountLabel] = useState('Account')
   const [loading, setLoading] = useState(true)
 
@@ -23,7 +23,7 @@ export function TransactionListContent({
     Promise.all([
       getAccountById(accountId).then((a) => setAccountLabel(a.accountDisplayName)).catch(() => {}),
       getTransactions(accountId).then((data: unknown[]) => {
-        setTransactions((data as Array<{ direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>).slice())
+        setTransactions((data as Array<{ postedDate: string; direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>).slice())
       }).catch(() => setTransactions([])),
     ]).finally(() => setLoading(false))
   }, [accountId])
@@ -129,6 +129,7 @@ export function TransactionListContent({
                     <span className="text-sm text-gray-500">{tx.direction}</span>
                   </div>
                   <div className="flex flex-col items-end gap-0.5">
+                    <div className='font-medium text-gray-900 mr-2'>{tx.postedDate}</div>
                     <span
                       className={`font-semibold ${
                         (tx.moneyResponse?.amount ?? 0) >= 0 ? 'text-emerald-600' : 'text-gray-900'

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthLayout } from '../components/Auth/AuthLayout'
-import { register } from '../api/authApi'
+import { register, getGoogleOAuthLoginUrl } from '../api/authApi'
+import { CURRENCY_OPTIONS } from '../constants/currencies'
 
 const TIMEZONES = [
   'America/New_York',
@@ -14,8 +15,6 @@ const TIMEZONES = [
   'Asia/Tokyo',
   'Asia/Shanghai',
 ]
-
-const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CNY']
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -211,9 +210,9 @@ export function RegisterPage() {
               onChange={(e) => setBaseCurrencyCode(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
-              {CURRENCIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
+              {CURRENCY_OPTIONS.map(({ code, name }) => (
+                <option key={code} value={code}>
+                  {code} – {name}
                 </option>
               ))}
             </select>
@@ -221,12 +220,11 @@ export function RegisterPage() {
 
           <hr className="border-0 border-t-2 border-dashed border-gray-300" />
 
-          <div className="flex items-center justify-center rounded-lg border border-indigo-300 bg-indigo-100 px-4 py-3">
-            <svg
-              className="mr-2 h-5 w-5"
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
+          <a
+            href={getGoogleOAuthLoginUrl()}
+            className="flex items-center justify-center rounded-lg border border-indigo-300 bg-indigo-100 px-4 py-3 text-gray-700 transition-colors hover:bg-indigo-200"
+          >
+            <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" aria-hidden>
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -244,10 +242,8 @@ export function RegisterPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            <span className="text-sm font-medium text-gray-700">
-              Register with Google (coming soon)
-            </span>
-          </div>
+            <span className="text-sm font-medium">Register with Google</span>
+          </a>
 
           <button
             type="submit"

@@ -19,26 +19,6 @@ const THEME = {
   grid: '#e5e7eb',
 }
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
-const MOCK_CHART_DATA = DAYS.map((day, i) => ({
-  day,
-  fullDate: `${day}, ${7 + i} Jan 2025`,
-  savings: [240, 180, 320, 240, 200, 280, 220][i],
-  income: [700, 500, 650, 700, 600, 720, 580][i],
-  expenses: [-460, -380, -520, -460, -420, -490, -410][i],
-}))
-
-const MOCK_SUMMARY = {
-  balance: 12450,
-  totalIncome: 15000,
-  totalExpenses: 6700,
-  savedBalance: 8300,
-  incomeTrend: 5.1,
-  expensesTrend: -15.5,
-  savedTrend: 20.7,
-}
-
 export type ChartPeriod = '1d' | '7d' | '14d' | '30d' | '6M' | '1Y'
 
 export const CHART_PERIODS: ChartPeriod[] = ['1d', '7d', '14d', '30d', '6M', '1Y']
@@ -61,8 +41,8 @@ function CustomTooltip(props: {
   chartData?: Array<{ day: string; fullDate: string; savings: number; income: number; expenses: number }>
 }) {
   const { active, payload, label, chartData } = props
-  if (!active || !payload?.length || label === undefined) return null
-  const point = (chartData ?? MOCK_CHART_DATA).find((d) => d.day === label)
+  if (!active || !payload?.length || label === undefined || !chartData?.length) return null
+  const point = chartData.find((d) => d.day === label)
   if (!point) return null
   return (
     <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-lg">
@@ -106,11 +86,11 @@ export function BalanceChartPanel({
 }) {
   const hasSpending =
     dashboard?.chartData && dashboard.chartData.length > 0
-  const balance = dashboard?.totalBalance ?? MOCK_SUMMARY.balance
+  const balance = dashboard?.totalBalance ?? 0
   const totalIncome = dashboard?.totalIncome
   const totalExpenses = dashboard?.totalExpenses
   const savedBalance = dashboard?.savedBalance
-  const chartData = hasSpending ? dashboard!.chartData! : MOCK_CHART_DATA
+  const chartData = hasSpending ? dashboard!.chartData! : []
   const showPlaceholderChart = !hasSpending
 
   return (

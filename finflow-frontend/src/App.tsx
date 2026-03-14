@@ -8,8 +8,10 @@ import { TransactionListContent } from './pages/TransactionListContent'
 import { AccountCreatePage } from './pages/AccountCreatePage'
 import { TransactionCreatePage } from './pages/TransactionCreatePage'
 import { ProfilePage } from './pages/ProfilePage'
+import { ProfileUpdatePage } from './pages/ProfileUpdatePage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { CompleteProfilePage } from './pages/CompleteProfilePage'
 
 function MainApp() {
   const location = useLocation()
@@ -17,6 +19,7 @@ function MainApp() {
   const pathname = location.pathname
 
   const isProfile = pathname === '/app/profile'
+  const isProfileUpdate = pathname === '/app/profile/update'
   const isAccountCreate = pathname === '/app/transactions/accounts/create'
   const isArchived = pathname === '/app/transactions/archived'
   const isTransactionCreate = pathname.match(/^\/app\/transactions\/accounts\/[^/]+\/create-transaction$/)
@@ -25,14 +28,16 @@ function MainApp() {
   const accountId = accountIdMatch?.[1] ?? null
   const isTransactionList = accountId != null && !pathname.endsWith('/create-transaction')
 
-  const activeNavId = isProfile
+  const activeNavId = isProfile || isProfileUpdate
     ? 'profile'
     : transactionsMatch && !isAccountCreate && !isTransactionCreate && !isArchived
       ? 'transactions'
       : 'dashboard'
 
   let content: React.ReactNode
-  if (isProfile) {
+  if (isProfileUpdate) {
+    content = <ProfileUpdatePage />
+  } else if (isProfile) {
     content = <ProfilePage />
   } else if (isAccountCreate) {
     content = <AccountCreatePage />
@@ -86,6 +91,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/complete-profile" element={<CompleteProfilePage />} />
         <Route path="/app/*" element={<MainApp />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

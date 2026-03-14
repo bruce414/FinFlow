@@ -77,8 +77,22 @@ export async function login(body: LoginRequest): Promise<void> {
   })
   if (!res.ok) {
     const text = await res.text()
-    throw new Error(text || res.statusText || 'Login failed')
+    let msg = text || res.statusText || 'Login failed'
+    try {
+      const j = JSON.parse(text)
+      if (j && typeof j.message === 'string') msg = j.message
+    } catch {
+      /* use msg as-is */
+    }
+    throw new Error(msg)
   }
+}
+
+/** Returns the backend URL to start Google OAuth (redirect the browser here). */
+export function getGoogleOAuthLoginUrl(): string {
+  const base = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+  if (!base) throw new Error('VITE_API_BASE_URL is not set')
+  return `${base}/oauth2/authorization/google`
 }
 
 /** Local register. Uses CSRF token from getCsrf() for cross-origin. */

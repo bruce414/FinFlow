@@ -1,71 +1,52 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getMe, patchMe } from '../api/meApi'
+import { getMe, deleteMe } from '../api/meApi'
 import type { UserDetails } from '../types/core/UserDetails'
-import type { MePatchRequest } from '../types/core/MePatchRequest'
-
-const TIMEZONES = [
-  'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-  'UTC',
-  'Europe/London',
-  'Europe/Paris',
-  'Asia/Tokyo',
-  'Asia/Shanghai',
-]
 
 export function ProfilePage() {
   const navigate = useNavigate()
   const [user, setUser] = useState<UserDetails | null>(null)
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
-
-  // Editable fields (UserPatchDto)
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [dateOfBirth, setDateOfBirth] = useState('')
-  const [timeZone, setTimeZone] = useState('')
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deactivating, setDeactivating] = useState(false)
+  const [countdown, setCountdown] = useState(10)
+  const [deactivated, setDeactivated] = useState(false)
 
   useEffect(() => {
     getMe()
-      .then((data) => {
-        setUser(data)
-        setFirstName(data.firstName ?? '')
-        setLastName(data.lastName ?? '')
-        setPhoneNumber(data.phoneNumber ?? '')
-        setDateOfBirth(data.dateOfBirth ?? '')
-        setTimeZone(data.timeZone ?? 'America/New_York')
-      })
+      .then(setUser)
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load profile'))
       .finally(() => setLoading(false))
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!user) return
-    setError(null)
-    setSuccess(false)
-    setSaving(true)
+  useEffect(() => {
+    if (!deactivated || countdown <= 0) return
+    const t = setInterval(() => {
+      setCountdown((c) => {
+        if (c <= 1) {
+          clearInterval(t)
+          navigate('/', { replace: true })
+          return 0
+        }
+        return c - 1
+      })
+    }, 1000)
+    return () => clearInterval(t)
+  }, [deactivated, countdown, navigate])
+
+  const handleDeleteClick = () => setDeleteModalOpen(true)
+  const handleDeleteCancel = () => setDeleteModalOpen(false)
+  const handleDeleteConfirm = async () => {
+    setDeactivating(true)
     try {
-      const payload: MePatchRequest = {
-        firstName: firstName.trim() || undefined,
-        lastName: lastName.trim() || undefined,
-        phoneNumber: phoneNumber.trim() || null,
-        dateOfBirth: dateOfBirth || null,
-        timeZone: timeZone || null,
-      }
-      const updated = await patchMe(payload)
-      setUser(updated)
-      setSuccess(true)
+      await deleteMe()
+      setDeactivated(true)
+      setCountdown(10)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save')
+      setError(err instanceof Error ? err.message : 'Failed to deactivate account')
     } finally {
-      setSaving(false)
+      setDeactivating(false)
     }
   }
 
@@ -97,129 +78,124 @@ export function ProfilePage() {
   return (
     <div className="flex flex-1 flex-col overflow-auto p-8">
       <div className="mx-auto w-full max-w-md">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="mb-4 flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900"
-        >
-          <i className="fa-solid fa-arrow-left" aria-hidden />
-          Go back
-        </button>
         <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Profile
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Update your profile. Email cannot be changed here.
+          View your profile. Use the buttons below to update or deactivate your account.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-          {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
-              Profile saved.
-            </div>
-          )}
-
-          {/* Read-only: email */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              value={user?.email ?? ''}
-              readOnly
-              disabled
-              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-500"
-            />
-            <p className="mt-0.5 text-xs text-gray-400">Cannot be modified</p>
+        {error && (
+          <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
           </div>
+        )}
 
+        <dl className="mt-6 flex flex-col gap-4">
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Email</dt>
+            <dd className="mt-0.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900">
+              {user?.email ?? '—'}
+            </dd>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="profile-firstName" className="mb-1 block text-sm font-medium text-gray-700">
-                First name
-              </label>
-              <input
-                id="profile-firstName"
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                maxLength={50}
-              />
+              <dt className="text-sm font-medium text-gray-500">First name</dt>
+              <dd className="mt-0.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900">
+                {user?.firstName ?? '—'}
+              </dd>
             </div>
             <div>
-              <label htmlFor="profile-lastName" className="mb-1 block text-sm font-medium text-gray-700">
-                Last name
-              </label>
-              <input
-                id="profile-lastName"
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                maxLength={50}
-              />
+              <dt className="text-sm font-medium text-gray-500">Last name</dt>
+              <dd className="mt-0.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900">
+                {user?.lastName ?? '—'}
+              </dd>
             </div>
           </div>
-
           <div>
-            <label htmlFor="profile-phone" className="mb-1 block text-sm font-medium text-gray-700">
-              Phone <span className="text-gray-400">(E.164, e.g. +15551234567)</span>
-            </label>
-            <input
-              id="profile-phone"
-              type="tel"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              placeholder="+15551234567"
-            />
+            <dt className="text-sm font-medium text-gray-500">Phone</dt>
+            <dd className="mt-0.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900">
+              {user?.phoneNumber ?? '—'}
+            </dd>
           </div>
-
           <div>
-            <label htmlFor="profile-dob" className="mb-1 block text-sm font-medium text-gray-700">
-              Date of birth
-            </label>
-            <input
-              id="profile-dob"
-              type="date"
-              value={dateOfBirth}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            />
+            <dt className="text-sm font-medium text-gray-500">Date of birth</dt>
+            <dd className="mt-0.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900">
+              {user?.dateOfBirth ?? '—'}
+            </dd>
           </div>
-
           <div>
-            <label htmlFor="profile-timezone" className="mb-1 block text-sm font-medium text-gray-700">
-              Time zone
-            </label>
-            <select
-              id="profile-timezone"
-              value={timeZone}
-              onChange={(e) => setTimeZone(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-              {TIMEZONES.map((tz) => (
-                <option key={tz} value={tz}>
-                  {tz}
-                </option>
-              ))}
-            </select>
+            <dt className="text-sm font-medium text-gray-500">Time zone</dt>
+            <dd className="mt-0.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900">
+              {user?.timeZone ?? '—'}
+            </dd>
           </div>
+        </dl>
 
+        <div className="mt-8 flex flex-wrap gap-3">
           <button
-            type="submit"
-            disabled={saving}
-            className="mt-2 w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-70"
+            type="button"
+            onClick={() => navigate('/app/profile/update')}
+            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
-            {saving ? 'Saving…' : 'Save changes'}
+            Update profile
           </button>
-        </form>
+          <button
+            type="button"
+            onClick={handleDeleteClick}
+            className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          >
+            Delete user
+          </button>
+        </div>
       </div>
+
+      {/* Custom delete / deactivate modal */}
+      {(deleteModalOpen || deactivated) && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="deactivate-modal-title"
+        >
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl ring-1 ring-gray-200">
+            <h2 id="deactivate-modal-title" className="text-lg font-semibold text-gray-900">
+              {deactivated ? 'Account deactivated' : 'Deactivate account?'}
+            </h2>
+            {deactivated ? (
+              <p className="mt-2 text-sm text-gray-600">
+                This user has been deactivated. The system will return to the login page in{' '}
+                <span className="font-semibold text-indigo-600">{countdown}s</span>.
+              </p>
+            ) : (
+              <p className="mt-2 text-sm text-gray-600">
+                Deactivating your account will log you out. You will not be able to log in with this
+                account again. Return to the login page?
+              </p>
+            )}
+            {!deactivated && (
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={handleDeleteCancel}
+                  disabled={deactivating}
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-70"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteConfirm}
+                  disabled={deactivating}
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-70"
+                >
+                  {deactivating ? 'Deactivating…' : 'Deactivate'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

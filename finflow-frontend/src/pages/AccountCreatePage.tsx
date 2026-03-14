@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createAccount } from '../api/accountApi'
 import type { AccountCreateRequest } from '../types/core/account/AccountCreateRequest'
+import { CURRENCY_OPTIONS } from '../constants/currencies'
 
 const ACCOUNT_TYPES = ['CASH', 'CREDIT_CARD', 'CHECKING', 'SAVINGS']
 const ACCOUNT_ORIGINS = ['MANUAL', 'OPEN_BANKING', 'IMPORT']
@@ -35,7 +36,7 @@ export function AccountCreatePage() {
         institutionCode: institutionCode.trim().slice(0, 3).toUpperCase() || 'USD',
         moneyRequest: {
           amount: parseFloat(amount) || 0,
-          currencyCode: currencyCode.trim().slice(0, 3).toUpperCase() || 'USD',
+          currencyCode: currencyCode.trim() || 'USD',
         },
       }
       await createAccount(body)
@@ -203,15 +204,18 @@ export function AccountCreatePage() {
               <label htmlFor="currency" className="mb-1 block text-sm font-medium text-gray-700">
                 Currency
               </label>
-              <input
+              <select
                 id="currency"
-                type="text"
                 value={currencyCode}
-                onChange={(e) => setCurrencyCode(e.target.value.slice(0, 3).toUpperCase())}
+                onChange={(e) => setCurrencyCode(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                placeholder="USD"
-                maxLength={3}
-              />
+              >
+                {CURRENCY_OPTIONS.map(({ code, name }) => (
+                  <option key={code} value={code}>
+                    {code} – {name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

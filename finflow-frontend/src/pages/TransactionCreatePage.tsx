@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createTransaction } from '../api/transactionApi'
 import type { TransactionCreateRequest } from '../types/core/transaction/TransactionCreateRequest'
+import { CURRENCY_OPTIONS } from '../constants/currencies'
 
 const TRANSACTION_TYPES = ['CREDIT', 'DEBIT', 'TRANSFER'] as const
 const COUNTERPARTY_TYPES = ['PERSON', 'MERCHANT', 'BANK', 'Government', 'UNKNOWN'] as const
@@ -39,7 +40,7 @@ export function TransactionCreatePage({
       const body: TransactionCreateRequest = {
         moneyRequest: {
           amount: signedAmount,
-          currencyCode: currencyCode.trim().slice(0, 3).toUpperCase() || 'USD',
+          currencyCode: currencyCode.trim() || 'USD',
         },
         postedDate,
         transactionType,
@@ -119,14 +120,18 @@ export function TransactionCreatePage({
               <label htmlFor="tx-currency" className="mb-1 block text-sm font-medium text-gray-700">
                 Currency
               </label>
-              <input
+              <select
                 id="tx-currency"
-                type="text"
                 value={currencyCode}
-                onChange={(e) => setCurrencyCode(e.target.value.slice(0, 3).toUpperCase())}
+                onChange={(e) => setCurrencyCode(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                maxLength={3}
-              />
+              >
+                {CURRENCY_OPTIONS.map(({ code, name }) => (
+                  <option key={code} value={code}>
+                    {code} – {name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

@@ -10,13 +10,6 @@ export const CARD_GRADIENTS = [
   'linear-gradient(135deg, #3730a3 0%, #5b21b6 50%, #6d28d9 100%)',
 ]
 
-export const MOCK_CARDS = [
-  { last4: '7645', label: 'Excellence from start to end', balance: '$12,450' },
-  { last4: '8921', label: 'Premium rewards', balance: '$8,230' },
-  { last4: '4532', label: 'Business essentials', balance: '$24,100' },
-  { last4: '1209', label: 'Savings goal', balance: '$5,670' },
-]
-
 export type CardItem = { last4: string; label: string; balance: string }
 
 function formatBalance(money: { amount: number; currencyCode: string }): string {
@@ -133,9 +126,9 @@ export function CardStackView({
           label: a.accountDisplayName,
           balance: formatBalance(a.money),
         }))
-      : MOCK_CARDS
+      : [{ last4: '****', label: 'No accounts', balance: '$0.00' }]
   const count = cards.length
-  const safeIndex = Math.min(selectedIndex, count - 1)
+  const safeIndex = Math.min(selectedIndex, Math.max(0, count - 1))
 
   return (
     <div
@@ -220,8 +213,8 @@ export function RollingCardPanel({
   onSelectIndex: (index: number) => void
   accounts?: AccountSummaryCard[] | null
 }) {
-  const count = accounts && accounts.length > 0 ? accounts.length : 4
-  const safeIndex = Math.min(selectedIndex, count - 1)
+  const count = accounts && accounts.length > 0 ? accounts.length : 1
+  const safeIndex = Math.min(selectedIndex, Math.max(0, count - 1))
   return (
     <div className="flex shrink-0 items-center gap-3">
       <CardStackView selectedIndex={safeIndex} accounts={accounts} />
