@@ -139,7 +139,7 @@ public class User extends BaseEntity {
         user.phoneNumber = null;
         user.dateOfBirth = requirePastDate(dateOfBirth, "Date of Birth");
         user.timeZone = requireNonBlank(timeZone, "Time Zone");
-        user.baseCurrencyCode = null;
+        user.baseCurrencyCode = requireNonBlank(baseCurrencyCode, "Base Currency Code");
         user.status = UserStatus.ACTIVE;
         user.profileCompleted = profileCompleted;
         user.lastLoginAt = Instant.now();

@@ -72,12 +72,28 @@ public class AccountService {
         User user = userRepository.findByUserIdAndStatus(userId, UserStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        List<Account> accountList = user.getFinancialAccounts();
+        List<Account> accountList = accountRepository.findAccountsByUserUserId(userId);
         List<AccountSummaryResponseDto> accountDetailsOutDtoList = new ArrayList<>();
         for (Account account : accountList) {
-            accountDetailsOutDtoList.add(accountResponseMapper.toAccountSummaryResponseDto(account));
+            if (account.isActive()) {
+                accountDetailsOutDtoList.add(accountResponseMapper.toAccountSummaryResponseDto(account));
+            }
         }
         return accountDetailsOutDtoList;
+    }
+
+    public List<AccountSummaryResponseDto> getArchivedAccountsByUserId(UUID userId) {
+        User user = userRepository.findByUserIdAndStatus(userId, UserStatus.ACTIVE)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        List<Account> accountList = accountRepository.findAccountsByUserUserId(userId);
+        List<AccountSummaryResponseDto> result = new ArrayList<>();
+        for (Account account : accountList) {
+            if (!account.isActive()) {
+                result.add(accountResponseMapper.toAccountSummaryResponseDto(account));
+            }
+        }
+        return result;
     }
 
     public AccountDetailsOutDto changeAccountNameById(UUID userId, UUID accountId, AccountRenameDto accountRenameDto) {
@@ -101,5 +117,6 @@ public class AccountService {
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + accountId));
 
         account.deActive();
+        accountRepository.save(account);
     }
 }

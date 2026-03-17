@@ -1,6 +1,7 @@
 package com.finflow.finflowbackend.auth.onboarding.handler;
 
 import com.finflow.finflowbackend.auth.onboarding.dto.PendingGoogleSignup;
+import com.finflow.finflowbackend.common.enums.UserStatus;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.user.UserRepository;
 import jakarta.servlet.ServletException;
@@ -59,13 +60,24 @@ public class GoogleOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         String lastName = oidcUser.getFamilyName();   // may be null
         Boolean emailVerified = oidcUser.getEmailVerified(); // may be null
 
-        // 1) If user already exists by google subject: route by onboarding completeness
+        // 1) If user already exists by google subject: route by onboarding completeness or reject deactivated
         User user = userRepository.findByGoogleSubject(sub).orElse(null);
         if (user != null) {
+            if (user.getStatus() == UserStatus.DEACTIVATED) {
+                if (request.getSession(false) != null) {
+                    request.getSession(false).invalidate();
+                }
+                try {
+                    String loginUrl = java.net.URI.create(dashboardUrl).resolve("/").toString() + "?error=deactivated";
+                    response.sendRedirect(loginUrl);
+                } catch (Exception ex) {
+                    throw new ServletException("Invalid dashboard URL for redirect", ex);
+                }
+                return;
+            }
             user.markLoginNow();
 
-            // You need a real method/flag for this; placeholder:
-            boolean profileComplete = user.isProfileComplete(); // implement this
+            boolean profileComplete = user.isProfileComplete();
 
             response.sendRedirect(profileComplete ? dashboardUrl : completeProfileUrl);
             return;

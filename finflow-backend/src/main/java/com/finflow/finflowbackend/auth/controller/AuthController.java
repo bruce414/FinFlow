@@ -90,7 +90,7 @@ public class AuthController {
             user.getFirstName(),
             user.getLastName(),
             user.getEmail(),
-            user.getPasswordHash()
+            user.getAuthMethod().name()
         );
     }
 

@@ -1,3 +1,8 @@
+app:
+  frontend:
+    dashboard-url: http://localhost:5173/app
+    complete-profile-url: http://localhost:5173/complete-profile
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:finflowbackend}

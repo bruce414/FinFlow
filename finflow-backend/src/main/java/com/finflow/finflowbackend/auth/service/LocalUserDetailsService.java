@@ -1,5 +1,6 @@
 package com.finflow.finflowbackend.auth.service;
 
+import com.finflow.finflowbackend.common.enums.UserStatus;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.user.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,8 +23,11 @@ public class LocalUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(userName.toLowerCase())
-            .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userName));
+            .orElseThrow(() -> new UsernameNotFoundException("This user does not exist"));
 
+        if (user.getStatus() == UserStatus.DEACTIVATED) {
+            throw new UsernameNotFoundException("This user does not exist");
+        }
         if (user.getPasswordHash() == null) {
             throw new UsernameNotFoundException("User has no password");
         }

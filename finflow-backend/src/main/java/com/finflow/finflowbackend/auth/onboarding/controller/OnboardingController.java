@@ -69,7 +69,7 @@ public class OnboardingController {
         }
 
         String firstName = (pendingGoogleSignup.firstName() != null && !pendingGoogleSignup.firstName().isBlank()) ? pendingGoogleSignup.firstName() : "User";
-        String lastName = (pendingGoogleSignup.lastName() != null && !pendingGoogleSignup.lastName().isBlank()) ? pendingGoogleSignup.lastName() : " ";
+        String lastName = (pendingGoogleSignup.lastName() != null && !pendingGoogleSignup.lastName().isBlank()) ? pendingGoogleSignup.lastName() : "HA";
 
         User user = User.createGoogleOAuthUser(
                 firstName,

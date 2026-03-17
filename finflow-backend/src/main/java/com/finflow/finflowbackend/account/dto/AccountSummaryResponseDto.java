@@ -12,6 +12,7 @@ public record AccountSummaryResponseDto(
     AccountOrigin accountOrigin,
     String providerAccountName,
     String accountDisplayName,
+    String accountNumberLast4,
     MoneyResponseDto money,
     boolean active
 ) {}
