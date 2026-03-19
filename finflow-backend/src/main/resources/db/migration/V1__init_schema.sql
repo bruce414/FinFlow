@@ -111,8 +111,7 @@ CREATE TABLE budgets (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
     budget_name VARCHAR(255) NOT NULL,
-    period_type VARCHAR(20) NOT NULL CHECK (period_type IN ('DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY', 'YEARLY', 'CUSTOM')),
-    custom_interval_period int,
+    period_type VARCHAR(20) NOT NULL CHECK (period_type IN ('DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY', 'YEARLY')),
     start_date DATE NOT NULL,
     budget_amount DECIMAL(19, 6) NOT NULL,
     budget_currency_code VARCHAR(3) NOT NULL,
@@ -131,13 +130,6 @@ CREATE TABLE budgets (
 
     CONSTRAINT fk_budget_category
         FOREIGN KEY (category_id) REFERENCES categories(id),
-
-    CONSTRAINT chk_budget_custom_interval
-        CHECK (
-            (period_type = 'CUSTOM' AND custom_interval_period IS NOT NULL AND custom_interval_period > 0)
-            OR
-            (period_type <> 'CUSTOM' AND (custom_interval_period IS NULL OR custom_interval_period = 0))
-        ),
 
     CONSTRAINT uq_budgets_user_name UNIQUE (user_id, budget_name)
 );

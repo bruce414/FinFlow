@@ -41,9 +41,6 @@ public class Budget extends BaseEntity {
     @Column(nullable = false)
     private PeriodType periodType;
 
-    @Column
-    private int customIntervalPeriod;
-
     @Column(nullable = false)
     private LocalDate startDate;
 
@@ -77,28 +74,45 @@ public class Budget extends BaseEntity {
         active = false;
     }
 
+    /**
+     * Updates budget fields from an update request. startDate and category are not changed.
+     */
+    public void updateDetails(
+            String budgetName,
+            PeriodType periodType,
+            Money budgetMoney,
+            boolean enableRollover,
+            boolean active
+    ) {
+        if (budgetName != null && !budgetName.isBlank()) {
+            this.budgetName = budgetName.trim();
+        }
+        if (periodType != null) {
+            this.periodType = periodType;
+        }
+        if (budgetMoney != null) {
+            if (budgetMoney.getAmount() != null && budgetMoney.getAmount().signum() < 0) {
+                throw new IllegalArgumentException("budget cannot be negative");
+            }
+            this.budgetMoney = budgetMoney;
+        }
+        this.enableRollover = enableRollover;
+        this.active = active;
+    }
+
     public static Budget createBudget(
             User user,
             String budgetName,
             PeriodType periodType,
-            int customIntervalPeriod,
             LocalDate startDate,
             Money budgetMoney,
             boolean enableRollover,
             Category budgetCategory
     ) {
-        String normalizedString = Objects.requireNonNull(budgetName).trim();
-        if (periodType == PeriodType.CUSTOM) {
-            if (customIntervalPeriod <= 0) throw new IllegalArgumentException("custom interval period must be > 0");
-        }
-        else {
-            customIntervalPeriod = 0;
-        }
         Budget budget = new Budget();
         budget.user = Objects.requireNonNull(user, "User must not be null");
-        budget.budgetName = Objects.requireNonNull(budgetName, "Budget name must not be null");
+        budget.budgetName = Objects.requireNonNull(budgetName, "Budget name must not be null").trim();
         budget.periodType = Objects.requireNonNull(periodType, "Period type must not be null");
-        budget.customIntervalPeriod = customIntervalPeriod;
         budget.startDate = Objects.requireNonNull(startDate, "Start date must not be null");
 
         Money checkMoney = Objects.requireNonNull(budgetMoney, "budgetMoney cannot be null");
