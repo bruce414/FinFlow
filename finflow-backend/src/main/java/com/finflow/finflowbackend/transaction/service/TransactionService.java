@@ -7,8 +7,10 @@ import com.finflow.finflowbackend.common.enums.TransactionOrigin;
 import com.finflow.finflowbackend.common.enums.TransactionType;
 import com.finflow.finflowbackend.common.enums.UserStatus;
 import com.finflow.finflowbackend.exception.ResourceNotFoundException;
+import com.finflow.finflowbackend.category.repository.CategoryRepository;
 import com.finflow.finflowbackend.transaction.Transaction;
 import com.finflow.finflowbackend.transaction.TransactionRepository;
+import com.finflow.finflowbackend.transaction.categorization.TransactionCategoryRuleEngine;
 import com.finflow.finflowbackend.transaction.dto.TransactionCreateDto;
 import com.finflow.finflowbackend.transaction.dto.TransactionDetailsOutDto;
 import com.finflow.finflowbackend.transaction.dto.TransactionSummaryResponseDto;
@@ -31,17 +33,23 @@ public class TransactionService {
     private final TransactionResponseMapper transactionResponseMapper;
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
+    private final CategoryRepository categoryRepository;
+    private final TransactionCategoryRuleEngine transactionCategoryRuleEngine;
 
     public TransactionService(
             TransactionRepository transactionRepository,
             TransactionResponseMapper transactionResponseMapper,
             UserRepository userRepository,
-            AccountRepository accountRepository
+            AccountRepository accountRepository,
+            CategoryRepository categoryRepository,
+            TransactionCategoryRuleEngine transactionCategoryRuleEngine
     ) {
         this.transactionRepository = transactionRepository;
         this.transactionResponseMapper = transactionResponseMapper;
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
+        this.categoryRepository = categoryRepository;
+        this.transactionCategoryRuleEngine = transactionCategoryRuleEngine;
     }
 
     public TransactionDetailsOutDto createManualTransaction(UUID userId, UUID accountId, TransactionCreateDto transactionCreateDto) {
@@ -66,6 +74,17 @@ public class TransactionService {
                 transactionCreateDto.counterpartyName(),
                 transactionCreateDto.counterpartyType()
         );
+        transaction.updateReference(transactionCreateDto.reference());
+
+        String categoryName = transactionCategoryRuleEngine.resolveCategoryName(
+                transactionCreateDto.transactionType(),
+                transactionDirection,
+                transactionCreateDto.counterpartyType(),
+                transactionCreateDto.counterpartyName(),
+                transactionCreateDto.reference()
+        );
+        categoryRepository.findActiveByUserIdAndName(userId, categoryName)
+                .ifPresent(transaction::assignCategory);
 
         Transaction savedTransaction = transactionRepository.save(transaction);
 
