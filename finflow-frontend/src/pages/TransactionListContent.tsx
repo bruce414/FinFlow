@@ -5,6 +5,15 @@ import { getAccountById } from '../api/accountApi'
 
 const ITEMS_PER_PAGE = 10
 
+type TransactionRow = {
+  postedDate: string
+  direction: string
+  moneyResponse: { amount: number; currencyCode: string }
+  counterpartyName: string
+  categoryId?: string | null
+  categoryName?: string | null
+}
+
 export function TransactionListContent({
   accountId,
   onBack,
@@ -15,7 +24,7 @@ export function TransactionListContent({
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [page, setPage] = useState(1)
-  const [transactions, setTransactions] = useState<Array<{ postedDate: string; direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>>([])
+  const [transactions, setTransactions] = useState<TransactionRow[]>([])
   const [accountLabel, setAccountLabel] = useState('Account')
   const [loading, setLoading] = useState(true)
 
@@ -23,7 +32,7 @@ export function TransactionListContent({
     Promise.all([
       getAccountById(accountId).then((a) => setAccountLabel(a.accountDisplayName)).catch(() => {}),
       getTransactions(accountId).then((data: unknown[]) => {
-        setTransactions((data as Array<{ postedDate: string; direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>).slice())
+        setTransactions((data as TransactionRow[]).slice())
       }).catch(() => setTransactions([])),
     ]).finally(() => setLoading(false))
   }, [accountId])
@@ -44,7 +53,7 @@ export function TransactionListContent({
   const goPrev = () => setPage((p) => Math.max(1, p - 1))
   const goNext = () => setPage((p) => Math.min(totalPages, p + 1))
 
-  const formatAmount = (tx: { direction: string; moneyResponse: { amount: number; currencyCode: string } }) => {
+  const formatAmount = (tx: TransactionRow) => {
     const amt = tx.moneyResponse?.amount ?? 0
     const code = tx.moneyResponse?.currencyCode ?? 'USD'
     const sign = amt >= 0 ? '+' : ''
@@ -121,12 +130,20 @@ export function TransactionListContent({
             ) : (
               pageTransactions.map((tx, i) => (
                 <li
-                  key={`${tx.counterpartyName}-${i}`}
+                  key={`${tx.postedDate ?? ''}-${tx.counterpartyName}-${i}`}
                   className="flex flex-row flex-wrap items-center justify-between gap-4 px-4 py-4"
                 >
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <span className="font-medium text-gray-900">{tx.counterpartyName ?? '—'}</span>
-                    <span className="text-sm text-gray-500">{tx.direction}</span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm text-gray-500">{tx.direction}</span>
+                      <span
+                        className="inline-flex max-w-full items-center rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-800 ring-1 ring-indigo-100"
+                        title={tx.categoryName ? 'Category' : 'No category assigned'}
+                      >
+                        <span className="truncate">{tx.categoryName?.trim() || 'Uncategorized'}</span>
+                      </span>
+                    </div>
                   </div>
                   <div className="flex flex-col items-end gap-0.5">
                     <div className='font-medium text-gray-900 mr-2'>{tx.postedDate}</div>

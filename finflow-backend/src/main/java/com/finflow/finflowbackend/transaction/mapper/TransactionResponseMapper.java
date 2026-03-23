@@ -19,5 +19,6 @@ public interface TransactionResponseMapper {
     //Transaction -> TransactionSummaryResponseDto
     @Mapping(source = "transactionMoney", target = "moneyResponse")
     @Mapping(source = "transactionCategory.id", target = "categoryId")
+    @Mapping(source = "transactionCategory.name", target = "categoryName")
     TransactionSummaryResponseDto toTransactionSummaryResponseDto(Transaction transaction);
 }

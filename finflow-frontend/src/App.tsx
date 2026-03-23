@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { TopBar } from './components/TopBar/TopBar'
 import { DashboardContent } from './pages/DashboardContent'
+import { CategoriesContent } from './pages/CategoriesContent'
+import { BudgetNewPage } from './pages/BudgetNewPage'
 import { AccountsTransactionsContent } from './pages/AccountsTransactionsContent'
 import { ArchivedAccountsContent } from './pages/ArchivedAccountsContent'
 import { TransactionListContent } from './pages/TransactionListContent'
@@ -20,6 +22,8 @@ function MainApp() {
 
   const isProfile = pathname === '/app/profile'
   const isProfileUpdate = pathname === '/app/profile/update'
+  const isCategories = pathname === '/app/categories'
+  const isBudgetNew = pathname === '/app/budgets/new'
   const isAccountCreate = pathname === '/app/transactions/accounts/create'
   const isArchived = pathname === '/app/transactions/archived'
   const isTransactionCreate = pathname.match(/^\/app\/transactions\/accounts\/[^/]+\/create-transaction$/)
@@ -30,15 +34,23 @@ function MainApp() {
 
   const activeNavId = isProfile || isProfileUpdate
     ? 'profile'
-    : transactionsMatch && !isAccountCreate && !isTransactionCreate && !isArchived
-      ? 'transactions'
-      : 'dashboard'
+    : isCategories
+      ? 'categories'
+      : isBudgetNew
+        ? 'budget'
+        : transactionsMatch && !isAccountCreate && !isTransactionCreate && !isArchived
+          ? 'transactions'
+          : 'dashboard'
 
   let content: React.ReactNode
   if (isProfileUpdate) {
     content = <ProfileUpdatePage />
   } else if (isProfile) {
     content = <ProfilePage />
+  } else if (isBudgetNew) {
+    content = <BudgetNewPage />
+  } else if (isCategories) {
+    content = <CategoriesContent />
   } else if (isAccountCreate) {
     content = <AccountCreatePage />
   } else if (isTransactionCreate && accountId) {
@@ -73,6 +85,8 @@ function MainApp() {
       <Sidebar activeId={activeNavId} onActiveIdChange={(id) => {
         if (id === 'transactions') navigate('/app/transactions')
         else if (id === 'dashboard') navigate('/app')
+        else if (id === 'categories') navigate('/app/categories')
+        else if (id === 'budget') navigate('/app/budgets/new')
         else if (id === 'profile') navigate('/app/profile')
       }} />
       <main className="min-w-0 flex-1 flex flex-col overflow-hidden bg-gray-100">

@@ -7,6 +7,9 @@ import type { AccountSummary } from '../types/core/account/AccountSummary'
 import type { DashboardResponse, DashboardTransactionItem } from '../types/core/dashboard/DashboardResponse'
 import { getAccounts } from '../api/accountApi'
 import { getDashboard } from '../api/dashboardApi'
+import { getBudgets } from '../api/budgetApi'
+import { BudgetPanel } from '../components/Dashboard/BudgetPanel'
+import type { BudgetSummary } from '../types/core/budget/BudgetSummary'
 
 function toNumber(v: unknown): number {
   if (typeof v === 'number' && !Number.isNaN(v)) return v
@@ -119,6 +122,8 @@ export function DashboardContent() {
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>('7d')
   const [chartView, setChartView] = useState<ChartViewType>('bar')
   const [loading, setLoading] = useState(true)
+  const [budgets, setBudgets] = useState<BudgetSummary[]>([])
+  const [budgetsLoading, setBudgetsLoading] = useState(true)
 
   const activeAccountId =
     viewAllAccounts || !accounts.length ? null : accounts[selectedCardIndex]?.accountId ?? null
@@ -126,16 +131,22 @@ export function DashboardContent() {
 
   const refresh = useCallback(() => {
     setLoading(true)
-    Promise.all([getAccounts(), getDashboard()])
-      .then(([accountsData, dashboardRes]: [AccountSummary[], DashboardResponse]) => {
+    setBudgetsLoading(true)
+    Promise.all([getAccounts(), getDashboard(), getBudgets()])
+      .then(([accountsData, dashboardRes, budgetList]: [AccountSummary[], DashboardResponse, BudgetSummary[]]) => {
         setAccounts(accountsData)
         setDashboard(dashboardRes)
+        setBudgets(budgetList)
       })
       .catch(() => {
         setAccounts([])
         setDashboard(null)
+        setBudgets([])
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        setLoading(false)
+        setBudgetsLoading(false)
+      })
   }, [])
 
   useEffect(() => {
@@ -274,6 +285,7 @@ export function DashboardContent() {
           onToggleViewAll={() => setViewAllAccounts((v) => !v)}
         />
       </div>
+      <BudgetPanel budgets={budgets} loading={budgetsLoading} />
     </div>
   )
 }
