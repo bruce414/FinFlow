@@ -116,6 +116,10 @@ public class Transaction extends BaseEntity {
         this.reference = normalizeReference(reference);
     }
 
+    public void assignCategory(Category category) {
+        this.transactionCategory = category;
+    }
+
     private static String normalizeReference(String reference) {
         if (reference == null) {
             return null;
