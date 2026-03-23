@@ -12,17 +12,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
+import com.finflow.finflowbackend.category.service.CategoryService;
 
 @RestController
 @RequestMapping("/api/v1/auth/onboarding")
 public class OnboardingController {
 
     private final UserRepository userRepository;
+    private final CategoryService categoryService;
 
-    public OnboardingController(UserRepository userRepository) {
+    public OnboardingController(UserRepository userRepository, CategoryService categoryService) {
         this.userRepository = userRepository;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/status")
@@ -82,7 +83,9 @@ public class OnboardingController {
                 request.baseCurrencyCode(),
                 true
         );
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
+
+        categoryService.createSystemCategories(user.getUserId());
 
         session.removeAttribute(GoogleOAuth2SuccessHandler.PENDING_GOOGLE_SIGNUP);
     }

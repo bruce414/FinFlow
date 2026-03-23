@@ -1,11 +1,9 @@
 package com.finflow.finflowbackend.user.service;
 
-import com.finflow.finflowbackend.common.enums.AuthMethod;
 import com.finflow.finflowbackend.common.enums.UserStatus;
 import com.finflow.finflowbackend.exception.ResourceNotFoundException;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.user.UserRepository;
-import com.finflow.finflowbackend.user.dto.LocalUserCreateDto;
 import com.finflow.finflowbackend.user.dto.UserDetailsOutDto;
 import com.finflow.finflowbackend.user.dto.UserPatchDto;
 import com.finflow.finflowbackend.user.mapper.UserPatchApplier;
