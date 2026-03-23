@@ -1,15 +1,14 @@
 package com.finflow.finflowbackend.user;
 
 import com.finflow.finflowbackend.account.Account;
+import com.finflow.finflowbackend.category.Category;
 import com.finflow.finflowbackend.common.enums.AuthMethod;
 import com.finflow.finflowbackend.common.enums.UserStatus;
 import com.finflow.finflowbackend.common.persistence.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.oauth2.core.AuthenticationMethod;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -86,6 +85,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<Account> financialAccounts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Category> categories = new ArrayList<>();
 
     public static User createLocalUser(
             String firstName,

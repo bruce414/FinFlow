@@ -7,16 +7,19 @@ import com.finflow.finflowbackend.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.finflow.finflowbackend.category.service.CategoryService;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CategoryService categoryService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, CategoryService categoryService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.categoryService = categoryService;
     }
 
     @Transactional
@@ -44,6 +47,10 @@ public class AuthService {
             registerRequest.timeZone(),
             registerRequest.baseCurrencyCode()
         );
-        userRepository.save(user);
+        // Flush so user row + generated userId are visible to queries in the same transaction
+        // (e.g. CategoryService#createSystemCategories loads the user by id).
+        userRepository.saveAndFlush(user);
+
+        categoryService.createSystemCategories(user.getUserId());
     }
 }
