@@ -37,6 +37,16 @@ export interface DashboardTransactionItem {
   categoryId: string | null
 }
 
+export interface DashboardBudgetAlertItem {
+  budgetId: string
+  budgetName: string
+  periodType: string
+  periodStart: string
+  periodEnd: string
+  limit: MoneyDto
+  spent: MoneyDto
+}
+
 export interface DashboardResponse {
   asOf: string
   currency: string
@@ -46,4 +56,5 @@ export interface DashboardResponse {
   spendingByCategory: DashboardSpendingByCategoryItem[]
   accounts: DashboardAccountItem[]
   recentTransactions: DashboardTransactionItem[]
+  budgetAlerts: DashboardBudgetAlertItem[]
 }

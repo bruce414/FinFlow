@@ -1,7 +1,7 @@
 const NAV_ITEMS = [
   { id: 'dashboard', icon: DashboardIcon },
   { id: 'transactions', icon: TransactionsIcon },
-  { id: 'accounts', icon: AccountsIcon },
+  { id: 'categories', icon: CategoriesIcon },
   { id: 'budget', icon: BudgetIcon },
   { id: 'reports', icon: ReportsIcon },
 ] as const
@@ -29,13 +29,11 @@ function TransactionsIcon({ className }: { className?: string }) {
   )
 }
 
-function AccountsIcon({ className }: { className?: string }) {
+function CategoriesIcon({ className }: { className?: string }) {
   return (
     <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="4" width="20" height="16" rx="2" />
-      <path d="M2 10h20" />
-      <path d="M6 14h2" />
-      <path d="M10 14h4" />
+      <path d="M12 2H2v10l9.29 9.29a1 1 0 0 0 1.41 0l6.59-6.59a1 1 0 0 0 0-1.41L12 2Z" />
+      <path d="M7 7h.01" />
     </svg>
   )
 }

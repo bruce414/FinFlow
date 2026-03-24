@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getTransactions } from '../api/transactionApi'
 import { getAccountById } from '../api/accountApi'
+import type { TransactionSummary } from '../types/core/transaction/TransactionSummary'
 
 const ITEMS_PER_PAGE = 10
 
@@ -15,23 +16,28 @@ export function TransactionListContent({
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [page, setPage] = useState(1)
-  const [transactions, setTransactions] = useState<Array<{ postedDate: string; direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>>([])
+  const [transactions, setTransactions] = useState<TransactionSummary[]>([])
   const [accountLabel, setAccountLabel] = useState('Account')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       getAccountById(accountId).then((a) => setAccountLabel(a.accountDisplayName)).catch(() => {}),
-      getTransactions(accountId).then((data: unknown[]) => {
-        setTransactions((data as Array<{ postedDate: string; direction: string; moneyResponse: { amount: number; currencyCode: string }; counterpartyName: string }>).slice())
-      }).catch(() => setTransactions([])),
+      getTransactions(accountId)
+        .then((data: unknown) => {
+          setTransactions(Array.isArray(data) ? (data as TransactionSummary[]) : [])
+        })
+        .catch(() => setTransactions([])),
     ]).finally(() => setLoading(false))
   }, [accountId])
 
-  const filteredTransactions = transactions.filter(
-    (t) =>
-      t.counterpartyName?.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredTransactions = transactions.filter((t) => {
+    const q = searchQuery.toLowerCase()
+    return (
+      t.counterpartyName?.toLowerCase().includes(q) ||
+      (t.categoryName?.toLowerCase().includes(q) ?? false)
+    )
+  })
 
   const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE))
   const startIndex = (page - 1) * ITEMS_PER_PAGE
@@ -44,7 +50,7 @@ export function TransactionListContent({
   const goPrev = () => setPage((p) => Math.max(1, p - 1))
   const goNext = () => setPage((p) => Math.min(totalPages, p + 1))
 
-  const formatAmount = (tx: { direction: string; moneyResponse: { amount: number; currencyCode: string } }) => {
+  const formatAmount = (tx: Pick<TransactionSummary, 'direction' | 'moneyResponse'>) => {
     const amt = tx.moneyResponse?.amount ?? 0
     const code = tx.moneyResponse?.currencyCode ?? 'USD'
     const sign = amt >= 0 ? '+' : ''
@@ -119,14 +125,19 @@ export function TransactionListContent({
                 </button>
               </li>
             ) : (
-              pageTransactions.map((tx, i) => (
+              pageTransactions.map((tx) => (
                 <li
-                  key={`${tx.counterpartyName}-${i}`}
+                  key={tx.transactionId}
                   className="flex flex-row flex-wrap items-center justify-between gap-4 px-4 py-4"
                 >
                   <div className="flex flex-col gap-0.5">
                     <span className="font-medium text-gray-900">{tx.counterpartyName ?? '—'}</span>
-                    <span className="text-sm text-gray-500">{tx.direction}</span>
+                    <span className="text-sm text-gray-500">
+                      {tx.direction}
+                      {tx.categoryName ? (
+                        <span className="text-gray-400"> · {tx.categoryName}</span>
+                      ) : null}
+                    </span>
                   </div>
                   <div className="flex flex-col items-end gap-0.5">
                     <div className='font-medium text-gray-900 mr-2'>{tx.postedDate}</div>

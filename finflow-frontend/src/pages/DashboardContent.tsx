@@ -7,11 +7,32 @@ import type { AccountSummary } from '../types/core/account/AccountSummary'
 import type { DashboardResponse, DashboardTransactionItem } from '../types/core/dashboard/DashboardResponse'
 import { getAccounts } from '../api/accountApi'
 import { getDashboard } from '../api/dashboardApi'
+import { getBudgets } from '../api/budgetApi'
+import type { BudgetSummary } from '../types/core/budget/BudgetSummary'
 
 function toNumber(v: unknown): number {
   if (typeof v === 'number' && !Number.isNaN(v)) return v
   if (typeof v === 'string') return parseFloat(v) || 0
   return 0
+}
+
+function formatMoney(m: { amount?: unknown; currencyCode?: string } | undefined): string {
+  if (!m) return '—'
+  const n = toNumber(m.amount)
+  const ccy = m.currencyCode ?? ''
+  return `${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${ccy}`.trim()
+}
+
+function formatPeriodType(periodType: string): string {
+  const map: Record<string, string> = {
+    DAILY: 'daily',
+    WEEKLY: 'weekly',
+    MONTHLY: 'monthly',
+    QUARTERLY: 'quarterly',
+    YEARLY: 'yearly',
+    CUSTOM: 'custom',
+  }
+  return map[periodType] ?? periodType.toLowerCase()
 }
 
 function getDateRange(period: ChartPeriod): { start: Date; end: Date } {
@@ -116,6 +137,7 @@ export function DashboardContent() {
   const [viewAllAccounts, setViewAllAccounts] = useState(false)
   const [accounts, setAccounts] = useState<AccountSummary[]>([])
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null)
+  const [budgetsList, setBudgetsList] = useState<BudgetSummary[]>([])
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>('7d')
   const [chartView, setChartView] = useState<ChartViewType>('bar')
   const [loading, setLoading] = useState(true)
@@ -126,14 +148,15 @@ export function DashboardContent() {
 
   const refresh = useCallback(() => {
     setLoading(true)
-    Promise.all([getAccounts(), getDashboard()])
-      .then(([accountsData, dashboardRes]: [AccountSummary[], DashboardResponse]) => {
+    Promise.all([
+      getAccounts().catch(() => [] as AccountSummary[]),
+      getDashboard().catch(() => null),
+      getBudgets().catch(() => [] as BudgetSummary[]),
+    ])
+      .then(([accountsData, dashboardRes, budgetsData]) => {
         setAccounts(accountsData)
         setDashboard(dashboardRes)
-      })
-      .catch(() => {
-        setAccounts([])
-        setDashboard(null)
+        setBudgetsList(budgetsData)
       })
       .finally(() => setLoading(false))
   }, [])
@@ -256,8 +279,26 @@ export function DashboardContent() {
     )
   }
 
+  const budgetAlerts = dashboard?.budgetAlerts ?? []
+
   return (
-    <div className="flex flex-col px-5 pt-2 pb-2">
+    <div className="flex flex-col gap-4 px-5 pt-2 pb-2">
+      {budgetAlerts.length > 0 && (
+        <div
+          role="alert"
+          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 shadow-sm"
+        >
+          <p className="font-semibold text-amber-900">Budget limit reached</p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-amber-900/90">
+            {budgetAlerts.map((a) => (
+              <li key={a.budgetId}>
+                Budget &quot;{a.budgetName}&quot; ({formatPeriodType(a.periodType)}): spent{' '}
+                {formatMoney(a.spent)} vs limit {formatMoney(a.limit)} (period {a.periodStart} – {a.periodEnd}).
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div className="flex flex-row items-center gap-6 rounded-xl bg-white p-4 shadow-sm">
         <RollingCardPanel
           accounts={accounts}
@@ -273,6 +314,41 @@ export function DashboardContent() {
           showAllAccounts={viewAllAccounts}
           onToggleViewAll={() => setViewAllAccounts((v) => !v)}
         />
+      </div>
+
+      <div className="rounded-xl bg-white p-6 shadow-sm">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-gray-900">Budgets</h2>
+          <button
+            type="button"
+            onClick={() => navigate('/app/budget')}
+            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+          >
+            Add budget
+          </button>
+        </div>
+        {budgetsList.length === 0 ? (
+          <p className="text-sm text-gray-600">
+            No budgets yet. Add a budget to set limits by category and period and track spending.
+          </p>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {budgetsList.map((b) => (
+              <li
+                key={b.budgetId}
+                className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0 last:pb-0"
+              >
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-900">{b.budgetName}</p>
+                  <p className="text-sm text-gray-600">
+                    Limit {formatMoney(b.budgetLimit)} · starts {b.startDate}
+                  </p>
+                </div>
+                <span className="shrink-0 text-sm text-gray-500">{b.active ? 'Active' : 'Inactive'}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   )
