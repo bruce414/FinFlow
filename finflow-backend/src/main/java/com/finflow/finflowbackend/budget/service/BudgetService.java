@@ -11,6 +11,7 @@ import com.finflow.finflowbackend.category.Category;
 import com.finflow.finflowbackend.category.repository.CategoryRepository;
 import com.finflow.finflowbackend.common.enums.UserStatus;
 import com.finflow.finflowbackend.exception.ResourceNotFoundException;
+import com.finflow.finflowbackend.notification.UserNotificationService;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.user.UserRepository;
 import com.finflow.finflowbackend.valueobjects.Money;
@@ -27,13 +28,19 @@ public class BudgetService {
     private final BudgetRepository budgetRepository;
     private final CategoryRepository categoryRepository;
     private final BudgetResponseMapper budgetResponseMapper;
+    private final UserNotificationService userNotificationService;
 
-    public BudgetService(UserRepository userRepository, BudgetRepository budgetRepository,
-                         CategoryRepository categoryRepository, BudgetResponseMapper budgetResponseMapper) {
+    public BudgetService(
+            UserRepository userRepository,
+            BudgetRepository budgetRepository,
+            CategoryRepository categoryRepository,
+            BudgetResponseMapper budgetResponseMapper,
+            UserNotificationService userNotificationService) {
         this.userRepository = userRepository;
         this.budgetRepository = budgetRepository;
         this.categoryRepository = categoryRepository;
         this.budgetResponseMapper = budgetResponseMapper;
+        this.userNotificationService = userNotificationService;
     }
 
     public BudgetDetailsOutDto getBudgetById(UUID userId, UUID budgetId) {
@@ -75,6 +82,7 @@ public class BudgetService {
         );
 
         budget = budgetRepository.save(budget);
+        userNotificationService.syncBudgetExceededNotifications(userId);
         return budgetResponseMapper.toBudgetDetailsOutDto(budget);
     }
 
@@ -98,6 +106,7 @@ public class BudgetService {
         );
 
         budget = budgetRepository.save(budget);
+        userNotificationService.syncBudgetExceededNotifications(userId);
         return budgetResponseMapper.toBudgetDetailsOutDto(budget);
     }
 
@@ -109,5 +118,6 @@ public class BudgetService {
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found with id: " + budgetId));
 
         budgetRepository.delete(budget);
+        userNotificationService.syncBudgetExceededNotifications(userId);
     }
 }

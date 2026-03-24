@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getMe } from '../../api/meApi'
 import { logout } from '../../api/authApi'
+import { getNotifications, markNotificationRead } from '../../api/notificationsApi'
 import type { UserDetails } from '../../types/core/UserDetails'
+import type { NotificationItem } from '../../types/core/notification/NotificationItem'
 
 const BAR_ITEM_HEIGHT = 'h-11'
 
@@ -15,11 +17,29 @@ function ProfileIcon({ className }: { className?: string }) {
   )
 }
 
+function formatNotificationTime(iso: string): string {
+  try {
+    const d = new Date(iso)
+    return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+  } catch {
+    return iso
+  }
+}
+
 export function TopBar() {
   const navigate = useNavigate()
   const [user, setUser] = useState<UserDetails | null>(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [notifications, setNotifications] = useState<NotificationItem[]>([])
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const notificationsRef = useRef<HTMLDivElement>(null)
+
+  const refreshNotifications = useCallback(() => {
+    getNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]))
+  }, [])
 
   useEffect(() => {
     getMe()
@@ -28,15 +48,40 @@ export function TopBar() {
   }, [])
 
   useEffect(() => {
-    if (!dropdownOpen) return
+    refreshNotifications()
+  }, [refreshNotifications])
+
+  useEffect(() => {
+    if (!dropdownOpen && !notificationsOpen) return
     function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      const target = e.target as Node
+      if (dropdownOpen && dropdownRef.current && !dropdownRef.current.contains(target)) {
         setDropdownOpen(false)
+      }
+      if (notificationsOpen && notificationsRef.current && !notificationsRef.current.contains(target)) {
+        setNotificationsOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [dropdownOpen])
+  }, [dropdownOpen, notificationsOpen])
+
+  const unreadCount = notifications.filter((n) => !n.read).length
+
+  const handleOpenNotifications = () => {
+    setNotificationsOpen((o) => !o)
+    setDropdownOpen(false)
+    refreshNotifications()
+  }
+
+  const handleMarkRead = async (id: string) => {
+    try {
+      await markNotificationRead(id)
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+    } catch {
+      /* ignore */
+    }
+  }
 
   const handleLogout = async () => {
     try {
@@ -70,13 +115,63 @@ export function TopBar() {
 
       {/* Right group: notification, premium, profile, add widget */}
       <div className={`flex items-center gap-3 ${BAR_ITEM_HEIGHT}`}>
-        <button
-          type="button"
-          className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800"
-          aria-label="Notifications"
-        >
-          <i className="fa-regular fa-bell text-lg" aria-hidden />
-        </button>
+        <div className="relative shrink-0" ref={notificationsRef}>
+          <button
+            type="button"
+            onClick={handleOpenNotifications}
+            className="relative flex size-11 items-center justify-center rounded-lg bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800"
+            aria-label="Notifications"
+            aria-expanded={notificationsOpen}
+            aria-haspopup="true"
+          >
+            <i className="fa-regular fa-bell text-lg" aria-hidden />
+            {unreadCount > 0 && (
+              <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+          {notificationsOpen && (
+            <div
+              className="absolute right-0 top-full z-50 mt-1 w-[min(100vw-2rem,22rem)] max-h-[min(24rem,70vh)] overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
+              role="region"
+              aria-label="Notifications"
+            >
+              <div className="border-b border-gray-100 px-3 py-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Notifications</p>
+              </div>
+              <ul className="max-h-[min(20rem,60vh)] overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <li className="px-3 py-6 text-center text-sm text-gray-500">No notifications yet.</li>
+                ) : (
+                  notifications.map((n) => (
+                    <li
+                      key={n.id}
+                      className={`border-b border-gray-50 px-3 py-3 text-left text-sm last:border-b-0 ${
+                        n.read ? 'bg-white' : 'bg-indigo-50/40'
+                      }`}
+                    >
+                      <div className="flex flex-col gap-1">
+                        <span className="font-semibold text-gray-900">{n.title}</span>
+                        <span className="text-xs text-gray-500">{formatNotificationTime(n.createdAt)}</span>
+                        <p className="text-gray-700 leading-snug">{n.body}</p>
+                        {!n.read && (
+                          <button
+                            type="button"
+                            onClick={() => handleMarkRead(n.id)}
+                            className="mt-1 self-start text-xs font-medium text-indigo-600 hover:text-indigo-500"
+                          >
+                            Mark as read
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
 
         <button
           type="button"
@@ -90,7 +185,10 @@ export function TopBar() {
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
-            onClick={() => setDropdownOpen((o) => !o)}
+            onClick={() => {
+              setNotificationsOpen(false)
+              setDropdownOpen((o) => !o)
+            }}
             className="flex h-full items-center gap-3 rounded-lg bg-white pl-2 pr-4 transition-colors hover:bg-gray-50"
             aria-label="Profile"
             aria-expanded={dropdownOpen}

@@ -14,10 +14,13 @@ public interface TransactionResponseMapper {
     @Mapping(source = "account.id", target = "accountId")
     @Mapping(source = "transactionMoney", target = "moneyResponse")
     @Mapping(source = "transactionCategory.id", target = "categoryId")
+    @Mapping(source = "transactionCategory.name", target = "categoryName")
     TransactionDetailsOutDto toTransactionDetailsOutDto(Transaction transaction);
 
     //Transaction -> TransactionSummaryResponseDto
+    @Mapping(source = "id", target = "transactionId")
     @Mapping(source = "transactionMoney", target = "moneyResponse")
     @Mapping(source = "transactionCategory.id", target = "categoryId")
+    @Mapping(source = "transactionCategory.name", target = "categoryName")
     TransactionSummaryResponseDto toTransactionSummaryResponseDto(Transaction transaction);
 }

@@ -5,8 +5,11 @@ import com.finflow.finflowbackend.account.AccountRepository;
 import com.finflow.finflowbackend.common.enums.TransactionDirection;
 import com.finflow.finflowbackend.common.enums.UserStatus;
 import com.finflow.finflowbackend.common.mapper.MoneyResponseMapper;
+import com.finflow.finflowbackend.budget.evaluation.BudgetExceededAlert;
+import com.finflow.finflowbackend.budget.evaluation.BudgetExceededEvaluationService;
 import com.finflow.finflowbackend.dashboard.dto.*;
 import com.finflow.finflowbackend.exception.ResourceNotFoundException;
+import com.finflow.finflowbackend.notification.UserNotificationService;
 import com.finflow.finflowbackend.security.CurrentUserService;
 import com.finflow.finflowbackend.transaction.Transaction;
 import com.finflow.finflowbackend.transaction.TransactionRepository;
@@ -33,18 +36,24 @@ public class DashboardService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
     private final MoneyResponseMapper moneyResponseMapper;
+    private final BudgetExceededEvaluationService budgetExceededEvaluationService;
+    private final UserNotificationService userNotificationService;
 
     public DashboardService(
             CurrentUserService currentUserService,
             AccountRepository accountRepository,
             TransactionRepository transactionRepository,
             UserRepository userRepository,
-            MoneyResponseMapper moneyResponseMapper) {
+            MoneyResponseMapper moneyResponseMapper,
+            BudgetExceededEvaluationService budgetExceededEvaluationService,
+            UserNotificationService userNotificationService) {
         this.currentUserService = currentUserService;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
         this.moneyResponseMapper = moneyResponseMapper;
+        this.budgetExceededEvaluationService = budgetExceededEvaluationService;
+        this.userNotificationService = userNotificationService;
     }
 
     /**
@@ -68,6 +77,13 @@ public class DashboardService {
                 .toList();
         List<DashboardTransactionItem> recentTransactions = fetchRecentTransactions(activeAccounts);
 
+        userNotificationService.syncBudgetExceededNotifications(userId);
+        List<DashboardBudgetAlertItem> budgetAlerts = budgetExceededEvaluationService
+                .findExceededBudgets(userId, LocalDate.now())
+                .stream()
+                .map(this::toDashboardBudgetAlertItem)
+                .toList();
+
         DashboardTotalBalance totalBalanceDto = new DashboardTotalBalance(
                 moneyResponseMapper.toMoneyResponseDto(totalBalance));
         DashboardMonthlySpending monthlySpendingDto = new DashboardMonthlySpending(
@@ -83,7 +99,19 @@ public class DashboardService {
                 monthlyIncomeDto,
                 spendingByCategory,
                 accountItems,
-                recentTransactions);
+                recentTransactions,
+                budgetAlerts);
+    }
+
+    private DashboardBudgetAlertItem toDashboardBudgetAlertItem(BudgetExceededAlert alert) {
+        return new DashboardBudgetAlertItem(
+                alert.budgetId(),
+                alert.budgetName(),
+                alert.periodType(),
+                alert.periodStart(),
+                alert.periodEnd(),
+                moneyResponseMapper.toMoneyResponseDto(alert.limit()),
+                moneyResponseMapper.toMoneyResponseDto(alert.spent()));
     }
 
     /**
@@ -165,7 +193,7 @@ public class DashboardService {
                 if (t.getDirection() != TransactionDirection.OUT) continue;
                 if (t.getPostedDate().isBefore(start) || t.getPostedDate().isAfter(end)) continue;
                 if (!t.getTransactionMoney().getCurrencyCode().equals(baseCurrencyCode)) continue;
-                Money amount = t.getTransactionMoney();
+                Money amount = outflowMagnitude(t.getTransactionMoney());
                 Category category = t.getTransactionCategory();
                 if (category == null) {
                     uncategorizedTotal = uncategorizedTotal.add(amount);
@@ -212,6 +240,11 @@ public class DashboardService {
         }
     }
 
+    /** Expense transactions store negative amounts; aggregations use magnitude. */
+    private static Money outflowMagnitude(Money transactionMoney) {
+        return Money.of(transactionMoney.getAmount().abs(), transactionMoney.getCurrencyCode());
+    }
+
     /**
      * Sum of OUT (spending) transactions in the current month, in base currency.
      * Useful for "this month's spending" when the dashboard DTO is extended.
@@ -231,7 +264,7 @@ public class DashboardService {
                 if (t.getDirection() != TransactionDirection.OUT) continue;
                 if (t.getPostedDate().isBefore(start) || t.getPostedDate().isAfter(end)) continue;
                 if (!t.getTransactionMoney().getCurrencyCode().equals(baseCurrencyCode)) continue;
-                total = total.add(t.getTransactionMoney());
+                total = total.add(outflowMagnitude(t.getTransactionMoney()));
             }
         }
         return total;

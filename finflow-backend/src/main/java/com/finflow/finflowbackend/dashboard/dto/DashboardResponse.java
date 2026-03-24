@@ -11,5 +11,6 @@ public record DashboardResponse(
         DashboardIncome monthlyIncome,
         List<DashboardSpendingByCategoryItem> spendingByCategory,
         List<DashboardAccountItem> accounts,
-        List<DashboardTransactionItem> recentTransactions
+        List<DashboardTransactionItem> recentTransactions,
+        List<DashboardBudgetAlertItem> budgetAlerts
 ) {}
