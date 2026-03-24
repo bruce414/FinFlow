@@ -14,6 +14,7 @@ import com.finflow.finflowbackend.transaction.categorization.TransactionCategory
 import com.finflow.finflowbackend.transaction.dto.TransactionCreateDto;
 import com.finflow.finflowbackend.transaction.dto.TransactionDetailsOutDto;
 import com.finflow.finflowbackend.transaction.dto.TransactionSummaryResponseDto;
+import com.finflow.finflowbackend.notification.UserNotificationService;
 import com.finflow.finflowbackend.transaction.mapper.TransactionResponseMapper;
 import com.finflow.finflowbackend.user.User;
 import com.finflow.finflowbackend.user.UserRepository;
@@ -35,6 +36,7 @@ public class TransactionService {
     private final AccountRepository accountRepository;
     private final CategoryRepository categoryRepository;
     private final TransactionCategoryRuleEngine transactionCategoryRuleEngine;
+    private final UserNotificationService userNotificationService;
 
     public TransactionService(
             TransactionRepository transactionRepository,
@@ -42,7 +44,8 @@ public class TransactionService {
             UserRepository userRepository,
             AccountRepository accountRepository,
             CategoryRepository categoryRepository,
-            TransactionCategoryRuleEngine transactionCategoryRuleEngine
+            TransactionCategoryRuleEngine transactionCategoryRuleEngine,
+            UserNotificationService userNotificationService
     ) {
         this.transactionRepository = transactionRepository;
         this.transactionResponseMapper = transactionResponseMapper;
@@ -50,6 +53,7 @@ public class TransactionService {
         this.accountRepository = accountRepository;
         this.categoryRepository = categoryRepository;
         this.transactionCategoryRuleEngine = transactionCategoryRuleEngine;
+        this.userNotificationService = userNotificationService;
     }
 
     public TransactionDetailsOutDto createManualTransaction(UUID userId, UUID accountId, TransactionCreateDto transactionCreateDto) {
@@ -95,6 +99,8 @@ public class TransactionService {
             account.debit(Money.of(money.getAmount().abs(), money.getCurrencyCode()));
             accountRepository.saveAndFlush(account);
         }
+
+        userNotificationService.syncBudgetExceededNotifications(userId);
 
         return transactionResponseMapper.toTransactionDetailsOutDto(savedTransaction);
     }

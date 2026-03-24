@@ -5,6 +5,7 @@ public enum PeriodType {
     WEEKLY,
     MONTHLY,
     QUARTERLY,
-    ANNUALLY,
+    /** Calendar-year budget; persisted as YEARLY to match DB constraint. */
+    YEARLY,
     CUSTOM
 }
