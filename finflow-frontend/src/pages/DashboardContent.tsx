@@ -9,30 +9,12 @@ import { getAccounts } from '../api/accountApi'
 import { getDashboard } from '../api/dashboardApi'
 import { getBudgets } from '../api/budgetApi'
 import type { BudgetSummary } from '../types/core/budget/BudgetSummary'
+import { BudgetListItem } from '../components/Budget/BudgetListItem'
 
 function toNumber(v: unknown): number {
   if (typeof v === 'number' && !Number.isNaN(v)) return v
   if (typeof v === 'string') return parseFloat(v) || 0
   return 0
-}
-
-function formatMoney(m: { amount?: unknown; currencyCode?: string } | undefined): string {
-  if (!m) return '—'
-  const n = toNumber(m.amount)
-  const ccy = m.currencyCode ?? ''
-  return `${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${ccy}`.trim()
-}
-
-function formatPeriodType(periodType: string): string {
-  const map: Record<string, string> = {
-    DAILY: 'daily',
-    WEEKLY: 'weekly',
-    MONTHLY: 'monthly',
-    QUARTERLY: 'quarterly',
-    YEARLY: 'yearly',
-    CUSTOM: 'custom',
-  }
-  return map[periodType] ?? periodType.toLowerCase()
 }
 
 function getDateRange(period: ChartPeriod): { start: Date; end: Date } {
@@ -280,25 +262,10 @@ export function DashboardContent() {
   }
 
   const budgetAlerts = dashboard?.budgetAlerts ?? []
+  const exceededBudgetIds = new Set(budgetAlerts.map((a) => a.budgetId))
 
   return (
     <div className="flex flex-col gap-4 px-5 pt-2 pb-2">
-      {budgetAlerts.length > 0 && (
-        <div
-          role="alert"
-          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 shadow-sm"
-        >
-          <p className="font-semibold text-amber-900">Budget limit reached</p>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-amber-900/90">
-            {budgetAlerts.map((a) => (
-              <li key={a.budgetId}>
-                Budget &quot;{a.budgetName}&quot; ({formatPeriodType(a.periodType)}): spent{' '}
-                {formatMoney(a.spent)} vs limit {formatMoney(a.limit)} (period {a.periodStart} – {a.periodEnd}).
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
       <div className="flex flex-row items-center gap-6 rounded-xl bg-white p-4 shadow-sm">
         <RollingCardPanel
           accounts={accounts}
@@ -334,18 +301,11 @@ export function DashboardContent() {
         ) : (
           <ul className="divide-y divide-gray-100">
             {budgetsList.map((b) => (
-              <li
+              <BudgetListItem
                 key={b.budgetId}
-                className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0 last:pb-0"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900">{b.budgetName}</p>
-                  <p className="text-sm text-gray-600">
-                    Limit {formatMoney(b.budgetLimit)} · starts {b.startDate}
-                  </p>
-                </div>
-                <span className="shrink-0 text-sm text-gray-500">{b.active ? 'Active' : 'Inactive'}</span>
-              </li>
+                budget={b}
+                exceeded={exceededBudgetIds.has(b.budgetId)}
+              />
             ))}
           </ul>
         )}

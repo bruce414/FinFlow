@@ -1,4 +1,4 @@
-import { authFetch, parseJsonOrThrow } from './authApi'
+import { getCsrf, authFetch, parseJsonOrThrow } from './authApi'
 import type { NotificationItem } from '../types/core/notification/NotificationItem'
 
 const BASE = '/api/v1/me/notifications'
@@ -20,8 +20,10 @@ export async function getNotifications(): Promise<NotificationItem[]> {
 }
 
 export async function markNotificationRead(notificationId: string): Promise<void> {
+  const { token } = await getCsrf()
   const res = await authFetch(`${BASE}/${encodeURIComponent(notificationId)}/read`, {
     method: 'PATCH',
+    csrfToken: token,
   })
   handleAuthError(res)
   if (!res.ok) {

@@ -5,6 +5,7 @@ import { getDashboard } from '../api/dashboardApi'
 import type { BudgetSummary } from '../types/core/budget/BudgetSummary'
 import type { CategoryItem } from '../types/core/category/CategoryItem'
 import { CURRENCY_OPTIONS } from '../constants/currencies'
+import { BudgetListItem } from '../components/Budget/BudgetListItem'
 
 const PERIOD_TYPES = ['DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY', 'YEARLY', 'CUSTOM'] as const
 
@@ -13,19 +14,12 @@ function todayIsoDate(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-function formatMoney(m: { amount: number; currencyCode: string }) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: m.currencyCode || 'USD',
-    minimumFractionDigits: 2,
-  }).format(m.amount)
-}
-
 export function BudgetPage() {
   const [budgets, setBudgets] = useState<BudgetSummary[]>([])
   const [categories, setCategories] = useState<CategoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [listError, setListError] = useState<string | null>(null)
+  const [exceededBudgetIds, setExceededBudgetIds] = useState<Set<string>>(new Set())
 
   const [budgetName, setBudgetName] = useState('')
   const [periodType, setPeriodType] = useState<string>('MONTHLY')
@@ -48,6 +42,7 @@ export function BudgetPage() {
         setBudgets(b)
         setCategories(c)
         if (dash?.currency) setCurrencyCode(dash.currency)
+        setExceededBudgetIds(new Set((dash?.budgetAlerts ?? []).map((a) => a.budgetId)))
         setListError(null)
       })
       .catch((e: unknown) => {
@@ -240,18 +235,11 @@ export function BudgetPage() {
         {!loading && !listError && budgets.length > 0 && (
           <ul className="divide-y divide-gray-100">
             {budgets.map((b) => (
-              <li
+              <BudgetListItem
                 key={b.budgetId}
-                className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0 last:pb-0"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900">{b.budgetName}</p>
-                  <p className="text-sm text-gray-600">
-                    Limit {formatMoney(b.budgetLimit)} · starts {b.startDate}
-                  </p>
-                </div>
-                <span className="shrink-0 text-sm text-gray-500">{b.active ? 'Active' : 'Inactive'}</span>
-              </li>
+                budget={b}
+                exceeded={exceededBudgetIds.has(b.budgetId)}
+              />
             ))}
           </ul>
         )}
