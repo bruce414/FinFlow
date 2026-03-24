@@ -55,7 +55,7 @@ export function ArchivedAccountsContent() {
           <h1 className="text-2xl font-bold text-gray-900">Archived accounts</h1>
           <button
             type="button"
-            onClick={() => navigate('/app/transactions')}
+            onClick={() => navigate('/app/accounts')}
             className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
           >
             <i className="fa-solid fa-arrow-left" aria-hidden />
@@ -66,7 +66,7 @@ export function ArchivedAccountsContent() {
           <p className="text-center text-gray-600">No archived accounts.</p>
           <button
             type="button"
-            onClick={() => navigate('/app/transactions')}
+            onClick={() => navigate('/app/accounts')}
             className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
           >
             Back to accounts
@@ -84,7 +84,7 @@ export function ArchivedAccountsContent() {
         <h1 className="text-2xl font-bold text-gray-900">Archived accounts</h1>
         <button
           type="button"
-          onClick={() => navigate('/app/transactions')}
+          onClick={() => navigate('/app/accounts')}
           className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
         >
           <i className="fa-solid fa-arrow-left" aria-hidden />

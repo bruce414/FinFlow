@@ -30,7 +30,7 @@ public class GoogleOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
     public GoogleOAuth2SuccessHandler(
             UserRepository userRepository,
-            @Value("${app.frontend.dashboard-url:http://localhost:5173/dashboard}") String dashboardUrl,
+            @Value("${app.frontend.dashboard-url:http://localhost:5173/app}") String dashboardUrl,
             @Value("${app.frontend.complete-profile-url:http://localhost:5173/complete-profile}") String completeProfileUrl
     ) {
         this.userRepository = userRepository;

@@ -40,7 +40,7 @@ export function AccountCreatePage() {
         },
       }
       await createAccount(body)
-      navigate('/app/transactions')
+      navigate('/app/accounts')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create account')
     } finally {
@@ -53,7 +53,7 @@ export function AccountCreatePage() {
       <div className="mx-auto w-full max-w-md">
         <button
           type="button"
-          onClick={() => navigate('/app/transactions')}
+          onClick={() => navigate('/app/accounts')}
           className="mb-4 flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900"
         >
           <i className="fa-solid fa-arrow-left" aria-hidden />

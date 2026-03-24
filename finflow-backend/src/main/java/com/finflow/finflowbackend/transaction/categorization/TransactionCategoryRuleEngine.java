@@ -79,7 +79,7 @@ public class TransactionCategoryRuleEngine {
         if (containsAny(haystack,
                 "restaurant", "cafe", "coffee", "starbucks", "mcdonald", "burger", "doordash", "grubhub", "uber eats",
                 "instacart", "whole foods", "trader joe", "kroger", "safeway", "publix", "grocery", "supermarket",
-                "bakery", "pizza", "deli")) {
+                "bakery", "pizza", "deli", "sushi", "ramen", "udon")) {
             return FOOD;
         }
         if (containsAny(haystack,

@@ -91,7 +91,7 @@ export function TransactionListContent({
         </h1>
         <button
           type="button"
-          onClick={() => navigate(`/app/transactions/accounts/${accountId}/create-transaction`)}
+          onClick={() => navigate(`/app/accounts/${accountId}/create-transaction`)}
           className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
         >
           <i className="fa-solid fa-plus" aria-hidden />
@@ -120,7 +120,7 @@ export function TransactionListContent({
                 </p>
                 <button
                   type="button"
-                  onClick={() => navigate(`/app/transactions/accounts/${accountId}/create-transaction`)}
+                  onClick={() => navigate(`/app/accounts/${accountId}/create-transaction`)}
                   className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
                 >
                   <i className="fa-solid fa-plus" aria-hidden />

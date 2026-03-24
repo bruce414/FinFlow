@@ -257,7 +257,7 @@ export function DashboardContent() {
           <p className="text-center text-gray-600">There&apos;s nothing to show.</p>
           <button
             type="button"
-            onClick={() => navigate('/app/transactions')}
+            onClick={() => navigate('/app/accounts')}
             className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
           >
             Add accounts
