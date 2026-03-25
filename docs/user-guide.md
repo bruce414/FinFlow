@@ -1,6 +1,6 @@
 # FinFlow User Guide
 
-This guide explains how to navigate FinFlow and what each major feature does. It also describes the results you should expect after you use each feature.
+This guide explains how to navigate FinFlow and what each major feature does. It also describes the results you should expect after you interact with each feature.
 
 ---
 
@@ -9,14 +9,16 @@ This guide explains how to navigate FinFlow and what each major feature does. It
 ### 1.1 Sign in
 
 1. Open FinFlow in your browser.
-2. Sign in (currently implemented via Google OAuth in the backend).
+2. Sign in - currently two sign-in methods available:
+  - Local signin: user provide their email address and password after registration
+  - Google OAuth signin: user sign in using Google OAuth2 service managed in the backend.
 
 
 
 <!-- Screenshot: login page -->
 ![Login screen](./finflow-images/login.png)
 
-### 1.2 Complete your profile (first time only)
+### 1.2 Complete your profile (Google OAuth2 & first time only)
 
 After a successful Google login, if this is your first time, FinFlow will ask you to complete additional profile details.
 
@@ -41,9 +43,13 @@ Result:
 
 ---
 
+
 ## 2. Navigation overview
 
 Use the main app pages to move between the core workflows:
+
+<!-- Screenshot: dashboard onboarding -->
+![Dashboard onboarding](./finflow-images/dashboard-onboarding.png)
 
 - `Dashboard`: your high-level money snapshot and quick insights
 - `Accounts`: create/rename/archive accounts and see balances
@@ -91,18 +97,21 @@ Result:
 
 ### 3.3 Accounts preview
 
+![Accounts Page](./finflow-images/account-page.png)
+
 The dashboard shows active accounts (a quick list preview).
 
 Result:
 
 - Archived/deactivated accounts do not appear here.
 
-<!-- Screenshot: dashboard onboarding -->
-![Dashboard onboarding](./finflow-images/dashboard-onboarding.png)
+
 
 
 
 ### 3.4 Recent transactions
+
+![Transactions Page](./finflow-images/transaction-list.png)
 
 The dashboard also shows a short feed of your most recent posted transactions across active accounts (sorted by posted date, newest first).
 
@@ -123,6 +132,8 @@ Use Accounts to set up which financial accounts you want FinFlow to track.
 
 ### 4.1 Create an account
 
+![Create Account](./finflow-images/create-account.png)
+
 When you add an account, FinFlow stores:
 
 - account type and origin
@@ -130,9 +141,6 @@ When you add an account, FinFlow stores:
 - optional nickname/display name
 - last 4 digits of account number (if provided)
 - initial/current balance (amount + currency)
-
-<!-- Screenshot: create account form -->
-![Create account](./finflow-images/create-account.png)
 
 Result:
 
@@ -154,6 +162,9 @@ Result:
 
 ### 4.3 Archive / deactivate an account
 
+![Deactive account](./finflow-images/deactive-account.png)
+![Archived account](./finflow-images/archived-account.png)
+
 Deleting an account in this app deactivates it (archives it for reference).
 
 Result:
@@ -161,10 +172,7 @@ Result:
 - Deactivated accounts are excluded from dashboard totals and active account lists.
 - You can still view archived accounts from the Accounts page (if the UI provides an archived tab/section).
 
-<!-- Screenshots: account state changes -->
-![Account page](./finflow-images/account-page.png)
-![Archived account](./finflow-images/archived-account.png)
-![Deactive account](./finflow-images/deactive-account.png)
+
 
 
 
@@ -176,6 +184,9 @@ Transactions let you review activity per account and add new entries.
 
 ### 5.1 View transactions (per account)
 
+<!-- Screenshots: account state changes -->
+![Transaction List](./finflow-images/transaction-list.png)
+
 Open Transactions and select an account. The list is ordered with the most recently posted transactions at the top.
 
 Each transaction item typically includes:
@@ -185,11 +196,8 @@ Each transaction item typically includes:
 - counterparty name
 - category (or uncategorized)
 
-<!-- Screenshot: transactions list -->
-![Transaction list](./finflow-images/transaction-list.png)
 
-
-
+<!-- 
 ### 5.2 Transaction details
 
 When you open a transaction, you should be able to see its metadata, such as:
@@ -203,11 +211,14 @@ When you open a transaction, you should be able to see its metadata, such as:
 
 Result:
 
-- This helps you understand why a transaction ended up in a specific category.
+- This helps you understand why a transaction ended up in a specific category. -->
 
 
 
 ### 5.3 Add a manual transaction
+
+<!-- Screenshot: create transaction form -->
+![Create transaction](./finflow-images/create-transaction.png)
 
 In this MVP, users can add transactions manually.
 
@@ -222,9 +233,6 @@ Typical fields:
 - Counterparty name
 - Counterparty type (PERSON/MERCHANT/BANK/Government/UNKNOWN)
 - Reference (optional)
-
-<!-- Screenshot: create transaction form -->
-![Create transaction](./finflow-images/create-transaction.png)
 
 Result:
 
@@ -322,29 +330,31 @@ Result:
 
 To create a budget:
 
+<!-- Screenshot: create budget form -->
+![Create budget](./finflow-images/create-budget.png)
+
 - select the category
 - set the limit
 - configure period/start date and rollover
 
-<!-- Screenshot: create budget form -->
-![Create budget](./finflow-images/create-budget.png)
 
-To edit a budget:
+
+<!-- To edit a budget:
 
 - update budget name and limit/details as needed
-- toggle the budget active flag if your UI supports it
+- toggle the budget active flag if your UI supports it -->
 
 
 
 
 
-### 7.3 Delete a budget
+<!-- ### 7.3 Delete a budget
 
 You can remove a budget from your list.
 
 Result:
 
-- The deleted budget no longer appears in the Budgets page.
+- The deleted budget no longer appears in the Budgets page. -->
 
 
 
