@@ -246,7 +246,9 @@ SPRING_PROFILES_ACTIVE=local
 ./mvnw spring-boot:run
 ```
 
-💻 Frontend Setup
+---
+
+## 💻 Frontend Setup
 
 ```bash
 npm install
@@ -255,7 +257,7 @@ npm run dev
 
 ---
 
-### 🗄️ Database Management
+## 🗄️ Database Management
 
 Database schema changes are managed using Flyway.
 
@@ -271,7 +273,7 @@ This allows the project to maintain:
 
 ---
 
-### 📍 Project Status
+## 📍 Project Status
 
 FinFlow is currently in the MVP stage, with the main focus on establishing a strong foundation across:
 
@@ -291,7 +293,7 @@ The project is actively being expanded toward a more complete finance platform.
 
 ---
 
-### 🛣️ Roadmap
+## 🛣️ Roadmap
 
 Planned next steps include:
 
@@ -311,11 +313,9 @@ Planned next steps include:
 
 🧾 stronger financial modelling for long-term scalability
 
-
 ---
 
-
-### 🌍 Long-Term Vision
+## 🌍 Long-Term Vision
 
 FinFlow is intended to grow into more than a budgeting tracker.
 
@@ -333,7 +333,7 @@ This project is also a way for me to deepen my understanding of how modern finan
 
 ---
 
-### 📁 Repository Structure
+## 📁 Repository Structure
 
 Update this section to match your actual repo structure.
 
@@ -354,6 +354,6 @@ finflow/
 ---
 
 
-### 📝 Notes
+## 📝 Notes
 
 This project is still evolving, and some features described in the roadmap are planned rather than fully implemented. The current emphasis is on building the system correctly at the foundation level before expanding further.
