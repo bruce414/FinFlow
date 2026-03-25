@@ -375,7 +375,7 @@ Result:
 
 
 
----
+<!-- ---
 
 ## 9. Common scenarios
 
@@ -409,4 +409,4 @@ Result:
 
 - Once you correct the posted date, currency, or account status, the dashboard should update.
 
-
+ -->
