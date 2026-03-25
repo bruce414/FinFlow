@@ -221,3 +221,139 @@ Make sure you have installed:
 
 ```bash
 docker compose up -d
+```
+
+---
+
+### 2️⃣ Configure environment variables
+
+Create your local environment configuration as needed, for example:
+
+```bash
+POSTGRES_DB=finflowbackend
+POSTGRES_USER=your_username
+POSTGRES_PASSWORD=your_password
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+SPRING_PROFILES_ACTIVE=local
+```
+
+---
+
+### 3️⃣ Run the backend
+
+```bash
+./mvnw spring-boot:run
+```
+
+💻 Frontend Setup
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
+### 🗄️ Database Management
+
+Database schema changes are managed using Flyway.
+
+This allows the project to maintain:
+
+📜 versioned schema history
+
+🔁 reproducible local setup
+
+🛡️ safer backend evolution
+
+🏢 better alignment with real production workflows
+
+---
+
+### 📍 Project Status
+
+FinFlow is currently in the MVP stage, with the main focus on establishing a strong foundation across:
+
+🔐 authentication
+
+🏦 financial account modelling
+
+💳 transaction flows
+
+🗂️ category structure
+
+📊 dashboard readiness
+
+🛡️ secure backend behaviour
+
+The project is actively being expanded toward a more complete finance platform.
+
+---
+
+### 🛣️ Roadmap
+
+Planned next steps include:
+
+📊 richer dashboard experience
+
+🗂️ improved category logic
+
+📥 CSV transaction import
+
+🎯 account and transaction UX improvements
+
+🔗 bank/open banking integrations
+
+🧠 rule-based transaction classification
+
+📈 forecasting and financial insight features
+
+🧾 stronger financial modelling for long-term scalability
+
+
+---
+
+
+### 🌍 Long-Term Vision
+
+FinFlow is intended to grow into more than a budgeting tracker.
+
+The broader vision is to build a finance platform that demonstrates:
+
+💻 strong backend engineering
+
+💰 thoughtful financial domain design
+
+🔐 secure application architecture
+
+🚀 practical fintech product thinking
+
+This project is also a way for me to deepen my understanding of how modern financial systems are built — from application security and transaction flows to future banking connectivity and data-driven financial tooling.
+
+---
+
+### 📁 Repository Structure
+
+Update this section to match your actual repo structure.
+
+```bash
+finflow/
+├── backend/
+│   ├── src/main/java/...
+│   ├── src/main/resources/
+│   └── pom.xml
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+
+### 📝 Notes
+
+This project is still evolving, and some features described in the roadmap are planned rather than fully implemented. The current emphasis is on building the system correctly at the foundation level before expanding further.
