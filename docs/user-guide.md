@@ -409,13 +409,4 @@ Result:
 
 - Once you correct the posted date, currency, or account status, the dashboard should update.
 
----
-
-## 10. Notes for future screenshots
-
-If you add more UI features later (like alerts/data health, deeper budget progress visuals, or settings), add new sections here and follow the same pattern:
-
-- explain the feature
-- describe the results users see
-- add screenshot placeholders for the key pages and forms
 
