@@ -1,0 +1,179 @@
+code,name,decimal_scale,active
+AED,United Arab Emirates Dirham,2,True
+AFN,Afghan Afghani,0,True
+ALL,Albanian Lek,0,True
+AMD,Armenian Dram,2,True
+ANG,Netherlands Antillean Guilder,2,True
+AOA,Angolan Kwanza,2,True
+ARS,Argentine Peso,2,True
+AUD,Australian Dollar,2,True
+AWG,Aruban Florin,2,True
+AZN,Azerbaijani Manat,2,True
+BAM,Bosnia-Herzegovina Convertible Mark,2,True
+BBD,Barbadian Dollar,2,True
+BDT,Bangladeshi Taka,2,True
+BGN,Bulgarian Lev,2,True
+BHD,Bahraini Dinar,3,True
+BIF,Burundian Franc,0,True
+BMD,Bermudan Dollar,2,True
+BND,Brunei Dollar,2,True
+BOB,Bolivian Boliviano,2,True
+BOV,Bolivian Mvdol,2,True
+BRL,Brazilian Real,2,True
+BSD,Bahamian Dollar,2,True
+BTN,Bhutanese Ngultrum,2,True
+BWP,Botswanan Pula,2,True
+BYN,Belarusian Ruble,2,True
+BZD,Belize Dollar,2,True
+CAD,Canadian Dollar,2,True
+CDF,Congolese Franc,2,True
+CHE,WIR Euro,2,True
+CHF,Swiss Franc,2,True
+CHW,WIR Franc,2,True
+CLF,Chilean Unit of Account (UF),4,True
+CLP,Chilean Peso,0,True
+CNH,Chinese Yuan (offshore),2,True
+CNY,Chinese Yuan,2,True
+COP,Colombian Peso,2,True
+COU,Colombian Real Value Unit,2,True
+CRC,Costa Rican Colón,2,True
+CUC,Cuban Convertible Peso,2,True
+CUP,Cuban Peso,2,True
+CVE,Cape Verdean Escudo,2,True
+CZK,Czech Koruna,2,True
+DJF,Djiboutian Franc,0,True
+DKK,Danish Krone,2,True
+DOP,Dominican Peso,2,True
+DZD,Algerian Dinar,2,True
+EGP,Egyptian Pound,2,True
+ERN,Eritrean Nakfa,2,True
+ETB,Ethiopian Birr,2,True
+EUR,Euro,2,True
+FJD,Fijian Dollar,2,True
+FKP,Falkland Islands Pound,2,True
+GBP,British Pound,2,True
+GEL,Georgian Lari,2,True
+GHS,Ghanaian Cedi,2,True
+GIP,Gibraltar Pound,2,True
+GMD,Gambian Dalasi,2,True
+GNF,Guinean Franc,0,True
+GTQ,Guatemalan Quetzal,2,True
+GYD,Guyanaese Dollar,2,True
+HKD,Hong Kong Dollar,2,True
+HNL,Honduran Lempira,2,True
+HRK,Croatian Kuna,2,True
+HTG,Haitian Gourde,2,True
+HUF,Hungarian Forint,2,True
+IDR,Indonesian Rupiah,2,True
+ILS,Israeli New Shekel,2,True
+INR,Indian Rupee,2,True
+IQD,Iraqi Dinar,0,True
+IRR,Iranian Rial,0,True
+ISK,Icelandic Króna,0,True
+JMD,Jamaican Dollar,2,True
+JOD,Jordanian Dinar,3,True
+JPY,Japanese Yen,0,True
+KES,Kenyan Shilling,2,True
+KGS,Kyrgystani Som,2,True
+KHR,Cambodian Riel,2,True
+KMF,Comorian Franc,0,True
+KPW,North Korean Won,0,True
+KRW,South Korean Won,0,True
+KWD,Kuwaiti Dinar,3,True
+KYD,Cayman Islands Dollar,2,True
+KZT,Kazakhstani Tenge,2,True
+LAK,Laotian Kip,0,True
+LBP,Lebanese Pound,0,True
+LKR,Sri Lankan Rupee,2,True
+LRD,Liberian Dollar,2,True
+LSL,Lesotho Loti,2,True
+LYD,Libyan Dinar,3,True
+MAD,Moroccan Dirham,2,True
+MDL,Moldovan Leu,2,True
+MGA,Malagasy Ariary,0,True
+MKD,Macedonian Denar,2,True
+MMK,Myanmar Kyat,0,True
+MNT,Mongolian Tugrik,2,True
+MOP,Macanese Pataca,2,True
+MRU,Mauritanian Ouguiya,2,True
+MUR,Mauritian Rupee,2,True
+MVR,Maldivian Rufiyaa,2,True
+MWK,Malawian Kwacha,2,True
+MXN,Mexican Peso,2,True
+MXV,Mexican Investment Unit,2,True
+MYR,Malaysian Ringgit,2,True
+MZN,Mozambican Metical,2,True
+NAD,Namibian Dollar,2,True
+NGN,Nigerian Naira,2,True
+NIO,Nicaraguan Córdoba,2,True
+NOK,Norwegian Krone,2,True
+NPR,Nepalese Rupee,2,True
+NZD,New Zealand Dollar,2,True
+OMR,Omani Rial,3,True
+PAB,Panamanian Balboa,2,True
+PEN,Peruvian Sol,2,True
+PGK,Papua New Guinean Kina,2,True
+PHP,Philippine Piso,2,True
+PKR,Pakistani Rupee,2,True
+PLN,Polish Zloty,2,True
+PYG,Paraguayan Guarani,0,True
+QAR,Qatari Rial,2,True
+RON,Romanian Leu,2,True
+RSD,Serbian Dinar,0,True
+RUB,Russian Ruble,2,True
+RWF,Rwandan Franc,0,True
+SAR,Saudi Riyal,2,True
+SBD,Solomon Islands Dollar,2,True
+SCR,Seychellois Rupee,2,True
+SDG,Sudanese Pound,2,True
+SEK,Swedish Krona,2,True
+SGD,Singapore Dollar,2,True
+SHP,St. Helena Pound,2,True
+SLL,Sierra Leonean Leone,0,True
+SOS,Somali Shilling,0,True
+SRD,Surinamese Dollar,2,True
+SSP,South Sudanese Pound,2,True
+STN,São Tomé & Príncipe Dobra,2,True
+SYP,Syrian Pound,0,True
+SZL,Swazi Lilangeni,2,True
+THB,Thai Baht,2,True
+TJS,Tajikistani Somoni,2,True
+TMT,Turkmenistani Manat,2,True
+TND,Tunisian Dinar,3,True
+TOP,Tongan Paʻanga,2,True
+TRY,Turkish Lira,2,True
+TTD,Trinidad & Tobago Dollar,2,True
+TWD,New Taiwan Dollar,2,True
+TZS,Tanzanian Shilling,2,True
+UAH,Ukrainian Hryvnia,2,True
+UGX,Ugandan Shilling,0,True
+USD,US Dollar,2,True
+USN,US Dollar (Next day),2,True
+UYI,Uruguayan Peso (Indexed Units),0,True
+UYU,Uruguayan Peso,2,True
+UYW,Uruguayan Nominal Wage Index Unit,4,True
+UZS,Uzbekistani Som,2,True
+VES,Venezuelan Bolívar,2,True
+VND,Vietnamese Dong,0,True
+VUV,Vanuatu Vatu,0,True
+WST,Samoan Tala,2,True
+XAF,Central African CFA Franc,0,True
+XAG,Silver,2,True
+XAU,Gold,2,True
+XBA,European Composite Unit,2,True
+XBB,European Monetary Unit,2,True
+XBC,European Unit of Account (XBC),2,True
+XBD,European Unit of Account (XBD),2,True
+XCD,East Caribbean Dollar,2,True
+XDR,Special Drawing Rights,2,True
+XOF,West African CFA Franc,0,True
+XPD,Palladium,2,True
+XPF,CFP Franc,0,True
+XPT,Platinum,2,True
+XSU,Sucre,2,True
+XTS,Testing Currency Code,2,True
+XUA,ADB Unit of Account,2,True
+XXX,Unknown Currency,2,True
+YER,Yemeni Rial,0,True
+ZAR,South African Rand,2,True
+ZMW,Zambian Kwacha,2,True

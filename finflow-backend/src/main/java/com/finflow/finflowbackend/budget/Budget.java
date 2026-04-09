@@ -1,0 +1,128 @@
+package com.finflow.finflowbackend.budget;
+
+import com.finflow.finflowbackend.category.Category;
+import com.finflow.finflowbackend.common.enums.PeriodType;
+import com.finflow.finflowbackend.common.persistence.BaseEntity;
+import com.finflow.finflowbackend.user.User;
+import com.finflow.finflowbackend.valueobjects.Money;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
+
+@Entity
+@Table(
+        name = "budgets",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uq_budgets_user_name", columnNames = {"user_id", "budget_name"})
+        }
+)
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Budget extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "uuid")
+    private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(nullable = false, name = "budget_name")
+    private String budgetName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PeriodType periodType;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(
+                    name = "amount",
+                    column = @Column(name = "budget_amount", nullable = false, precision = 19, scale = 6)
+            ),
+            @AttributeOverride(
+                    name = "currencyCode",
+                    column = @Column(name = "budget_currency_code", nullable = false, length = 3)
+            )
+    })
+    private Money budgetMoney;
+
+    @Column(nullable = false)
+    private boolean enableRollover = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category budgetCategory;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    public void deactivate() {
+        if (!this.active) {
+            return;
+        }
+        active = false;
+    }
+
+    /**
+     * Updates budget fields from an update request. startDate and category are not changed.
+     */
+    public void updateDetails(
+            String budgetName,
+            PeriodType periodType,
+            Money budgetMoney,
+            boolean enableRollover,
+            boolean active
+    ) {
+        if (budgetName != null && !budgetName.isBlank()) {
+            this.budgetName = budgetName.trim();
+        }
+        if (periodType != null) {
+            this.periodType = periodType;
+        }
+        if (budgetMoney != null) {
+            if (budgetMoney.getAmount() != null && budgetMoney.getAmount().signum() < 0) {
+                throw new IllegalArgumentException("budget cannot be negative");
+            }
+            this.budgetMoney = budgetMoney;
+        }
+        this.enableRollover = enableRollover;
+        this.active = active;
+    }
+
+    public static Budget createBudget(
+            User user,
+            String budgetName,
+            PeriodType periodType,
+            LocalDate startDate,
+            Money budgetMoney,
+            boolean enableRollover,
+            Category budgetCategory
+    ) {
+        Budget budget = new Budget();
+        budget.user = Objects.requireNonNull(user, "User must not be null");
+        budget.budgetName = Objects.requireNonNull(budgetName, "Budget name must not be null").trim();
+        budget.periodType = Objects.requireNonNull(periodType, "Period type must not be null");
+        budget.startDate = Objects.requireNonNull(startDate, "Start date must not be null");
+
+        Money checkMoney = Objects.requireNonNull(budgetMoney, "budgetMoney cannot be null");
+        if (checkMoney.getCurrencyCode() == null) throw new IllegalArgumentException("budgetMoney currency cannot be null");
+        if (checkMoney.getAmount() == null) throw new IllegalArgumentException("budgetMoney amount cannot be null");
+        if (checkMoney.getAmount().signum() < 0) throw new IllegalArgumentException("budget cannot be negative");
+        budget.budgetMoney = checkMoney;
+
+        budget.enableRollover = enableRollover;
+        budget.budgetCategory = Objects.requireNonNull(budgetCategory, "Budget category must not be null");
+        return budget;
+    }
+}
