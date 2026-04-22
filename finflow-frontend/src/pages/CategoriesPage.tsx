@@ -117,7 +117,7 @@ export function CategoriesPage() {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value: number) => formatMoney(value, baseCurrency)}
+                    formatter={(value) => formatMoney(toNumber(value), baseCurrency)}
                     contentStyle={{ borderRadius: '0.5rem', border: '1px solid #e5e7eb' }}
                   />
                 </PieChart>
